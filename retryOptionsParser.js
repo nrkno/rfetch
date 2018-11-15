@@ -1,9 +1,10 @@
 const parser = require('./util/parser')
 
 const defaultRetryOptions = {
-  maxRetries: 3,
-  timeout: 100,
+  signalTimeout: 1000,
   statusCodes: [ 200 ],
+  maxRetries: 3,
+  retryTimeout: 100,
   retryStatusCodes: [ ]
 }
 
@@ -23,7 +24,7 @@ function parse (options = {}) {
 
   const parsedOptions = options || {}
 
-  for (const key of ['maxRetries', 'timeout']) {
+  for (const key of ['maxRetries', 'retryTimeout', 'signalTimeout']) {
     parsedOptions[key] =
       parser.parseInteger(options[key]) || defaultRetryOptions[key]
   }

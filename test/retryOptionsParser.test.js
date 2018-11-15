@@ -4,14 +4,12 @@ const retryOptionsParser = require('../retryOptionsParser')
 describe('retryOptionsParser', () => {
   test('calling build with a set of options, should match expected values', () => {
     // Arrange
-    const defaultStatusCodes = [ 200 ]
-    const defaultRetryStatusCodes = []
-
     const defaultOptions = {
+      signalTimeout: 1000,
+      statusCodes: [ 200 ],
       maxRetries: 3,
-      timeout: 100,
-      statusCodes: defaultStatusCodes,
-      retryStatusCodes: defaultRetryStatusCodes
+      retryTimeout: 100,
+      retryStatusCodes: []
     }
 
     const values = [
@@ -22,10 +20,8 @@ describe('retryOptionsParser', () => {
       [],
 
       // defined values
-      { maxRetries: 1 },
-      { maxRetries: 2, timeout: 200 },
-      { maxRetries: 4, timeout: 300, statusCodes: 204, retryStatusCodes: 404 },
-      { maxRetries: 5, timeout: 120, statusCodes: [ 200, 201, 304 ], retryStatusCodes: [ 408, 418, 429 ] }
+      { signalTimeout: 600, statusCodes: 204, maxRetries: 2, retryTimeout: 200, retryStatusCodes: 404 },
+      { signalTimeout: 1200, statusCodes: [200, 201, 304], maxRetries: 5, retryTimeout: 300, retryStatusCodes: [408, 418, 429] }
     ]
 
     const expectedValues = [
@@ -35,11 +31,9 @@ describe('retryOptionsParser', () => {
       defaultOptions,
       defaultOptions,
 
-      //
-      { maxRetries: 1, timeout: 100, statusCodes: defaultStatusCodes, retryStatusCodes: defaultRetryStatusCodes },
-      { maxRetries: 2, timeout: 200, statusCodes: defaultStatusCodes, retryStatusCodes: defaultRetryStatusCodes },
-      { maxRetries: 4, timeout: 300, statusCodes: [ 204 ], retryStatusCodes: [ 404 ] },
-      { maxRetries: 5, timeout: 120, statusCodes: [ 200, 201, 304 ], retryStatusCodes: [ 408, 418, 429 ] }
+      // defined options set
+      { signalTimeout: 600, statusCodes: [ 204 ], maxRetries: 2, retryTimeout: 200, retryStatusCodes: [ 404 ] },
+      { signalTimeout: 1200, statusCodes: [200, 201, 304], maxRetries: 5, retryTimeout: 300, retryStatusCodes: [408, 418, 429] }
     ]
 
     // Act

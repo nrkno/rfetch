@@ -11,6 +11,7 @@ describe('parser', () => {
       'svada',
       'x10a',
       NaN,
+      [],
 
       // allowed values
       200,
@@ -20,6 +21,7 @@ describe('parser', () => {
 
     const expectedValues = [
       // null or values that yield NaN should return null
+      null,
       null,
       null,
       null,
@@ -47,6 +49,10 @@ describe('parser', () => {
       undefined,
       {},
 
+      // single number
+      200,
+      '302',
+
       // arrays
       [],
       [200, null, '301', NaN, 404]
@@ -56,6 +62,10 @@ describe('parser', () => {
       null,
       null,
       null,
+
+      // single numbers
+      [ 200 ],
+      [ 302 ],
 
       //
       [],

@@ -3,16 +3,17 @@ function parseInteger (value) {
     return null
   }
 
-  return parseInt(Number(value))
-}
-
-function parseIntegerArray (list) {
-  if (!list) {
+  const result = Number(value)
+  if (isNaN(result)) {
     return null
   }
 
-  if (!Array.isArray(list)) {
-    return []
+  return parseInt(result)
+}
+
+function parseIntegerArray (list) {
+  if (!list || !Array.isArray(list)) {
+    return null
   }
 
   return list.map(parseInteger)

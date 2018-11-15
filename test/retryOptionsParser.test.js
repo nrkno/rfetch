@@ -2,7 +2,85 @@
 const retryOptionsParser = require('../retryOptionsParser')
 
 describe('retryOptionsParser', () => {
-  test('calling build with a set of options, should match expected values', () => {
+  test('parseInteger', () => {
+    // Arrange
+    const values = [
+      // yields NaN values
+      null,
+      undefined,
+      'svada',
+      'x10a',
+      NaN,
+      [],
+
+      // allowed values
+      200,
+      '301',
+      404.00
+    ]
+
+    const expectedValues = [
+      // null or values that yield NaN should return null
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+
+      // parsed values
+      200,
+      301,
+      404
+    ]
+
+    // Act
+    const resultValues =
+      values.map(retryOptionsParser._parseInteger)
+
+    // Assert
+    expect(resultValues).toEqual(expectedValues)
+  })
+
+  test('parseIntegerArray', () => {
+    const values = [
+      // non arrays
+      null,
+      undefined,
+      {},
+
+      // single number
+      200,
+      '302',
+
+      // arrays
+      [],
+      [200, null, '301', NaN, 404]
+    ]
+
+    const expectedValues = [
+      null,
+      null,
+      null,
+
+      // single numbers
+      [200],
+      [302],
+
+      //
+      [],
+      [200, 301, 404]
+    ]
+
+    // Act
+    const resultValues =
+      values.map(retryOptionsParser._parseIntegerArray)
+
+    // Assert
+    expect(resultValues).toEqual(expectedValues)
+  })
+
+  test('calling parse with a set of options, should match expected values', () => {
     // Arrange
     const defaultOptions = {
       signalTimeout: 1000,

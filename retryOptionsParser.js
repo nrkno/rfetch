@@ -1,5 +1,3 @@
-const parser = require('./util/parser')
-
 const defaultRetryOptions = {
   signalTimeout: 1000,
   statusCodes: [ 200 ],
@@ -7,6 +5,34 @@ const defaultRetryOptions = {
   retryTimeout: 100,
   retryStatusCodes: [ ],
   errors: []
+}
+
+// Helper methods
+function parseInteger (value) {
+  if (!value) {
+    return null
+  }
+
+  if (Array.isArray(value)) {
+    return null
+  }
+
+  const result = Number(value)
+  if (isNaN(result)) {
+    return null
+  }
+
+  return parseInt(result)
+}
+
+function parseIntegerArray (list) {
+  if (!Array.isArray(list)) {
+    const value = parseInteger(list)
+    return value ? [ value ] : null
+  }
+
+  return list.map(parseInteger)
+    .filter(value => value !== null)
 }
 
 /**
@@ -27,12 +53,12 @@ function parse (options = {}) {
 
   for (const key of ['maxRetries', 'retryTimeout', 'signalTimeout']) {
     parsedOptions[key] =
-      parser.parseInteger(options[key]) || defaultRetryOptions[key]
+      parseInteger(options[key]) || defaultRetryOptions[key]
   }
 
   for (const key of ['statusCodes', 'retryStatusCodes']) {
     parsedOptions[key] =
-      parser.parseIntegerArray(options[key]) || defaultRetryOptions[key]
+      parseIntegerArray(options[key]) || defaultRetryOptions[key]
   }
 
   // will put received fetch errors in this array
@@ -42,7 +68,10 @@ function parse (options = {}) {
   return parsedOptions
 }
 
-module.exports = {
+module.exports = exports = {
   defaultRetryOptions,
   parse
 }
+
+exports._parseInteger = parseInteger
+exports._parseIntegerArray = parseIntegerArray

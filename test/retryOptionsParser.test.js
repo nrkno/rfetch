@@ -9,7 +9,8 @@ describe('retryOptionsParser', () => {
       statusCodes: [ 200 ],
       maxRetries: 3,
       retryTimeout: 100,
-      retryStatusCodes: []
+      retryStatusCodes: [],
+      errors: []
     }
 
     const values = [
@@ -32,8 +33,8 @@ describe('retryOptionsParser', () => {
       defaultOptions,
 
       // defined options set
-      { signalTimeout: 600, statusCodes: [ 204 ], maxRetries: 2, retryTimeout: 200, retryStatusCodes: [ 404 ] },
-      { signalTimeout: 1200, statusCodes: [200, 201, 304], maxRetries: 5, retryTimeout: 300, retryStatusCodes: [408, 418, 429] }
+      { signalTimeout: 600, statusCodes: [ 204 ], maxRetries: 2, retryTimeout: 200, retryStatusCodes: [ 404 ], errors: [] },
+      { signalTimeout: 1200, statusCodes: [200, 201, 304], maxRetries: 5, retryTimeout: 300, retryStatusCodes: [408, 418, 429], errors: [] }
     ]
 
     // Act

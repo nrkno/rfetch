@@ -5,7 +5,8 @@ const defaultRetryOptions = {
   statusCodes: [ 200 ],
   maxRetries: 3,
   retryTimeout: 100,
-  retryStatusCodes: [ ]
+  retryStatusCodes: [ ],
+  errors: []
 }
 
 /**
@@ -33,6 +34,10 @@ function parse (options = {}) {
     parsedOptions[key] =
       parser.parseIntegerArray(options[key]) || defaultRetryOptions[key]
   }
+
+  // will put received fetch errors in this array
+  parsedOptions.errors =
+    Array.isArray(options.errors) || []
 
   return parsedOptions
 }

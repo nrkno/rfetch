@@ -68,12 +68,14 @@ async function fetchWithRetry (url, options = null, retryOptions = null) {
       }
 
       if (retryStatusCodes.length && !retryStatusCodes.includes(response.status)) {
-        n = maxRetries - 1
-        throw new FetchWithRetryError(
+        const message =
           `Response.status: <${response.status}>, ` +
           `is not retryStatusCodes: <[${retryStatusCodes.join(', ')}]> ` +
           `attempt: <${n + 1}>, willRetry: <false>.`
-        )
+
+        // increment n so that we don't retry
+        n = maxRetries - 1
+        throw new FetchWithRetryError(message)
       }
 
       if (retryStatusCodes.length && retryStatusCodes.includes(response.status)) {

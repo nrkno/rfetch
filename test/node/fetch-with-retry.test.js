@@ -97,7 +97,7 @@ describe('fetch with retry for node', () => {
     const expectedErrors = [
       'FetchWithRetryError: Response.status: <503>, is in retryStatusCodes: <[503, 408]> attempt: <1>, willRetry: <true>.',
       'FetchWithRetryError: Response.status: <408>, is in retryStatusCodes: <[503, 408]> attempt: <2>, willRetry: <true>.',
-      'FetchWithRetryError: Response.status: <400>, is not retryStatusCodes: <[503, 408]> attempt: <5>, willRetry: <false>.'
+      'FetchWithRetryError: Response.status: <400>, is not retryStatusCodes: <[503, 408]> attempt: <3>, willRetry: <false>.'
     ]
 
     // Act + Assert
@@ -290,6 +290,8 @@ describe('fetch with retry for node', () => {
       errors
     }
 
+    const expectedStatusCode = 200
+    const expectedText = 'OK'
     const expectedMaxRetries = 4
     const expectedErrors = [
       'FetchWithRetryError: Response.status: <418>, not in expected statusCodes: <[200]> attempt: <1>, willRetry: <true>.',
@@ -333,11 +335,16 @@ describe('fetch with retry for node', () => {
 
     // Act and Assert
     fetchWithRetry(url, options, retryOptions)
-      .then(() => {
+      .then(async (response) => {
+        const text = await response.text()
+        expect(text).toEqual(expectedText)
+        expect(response.status).toEqual(expectedStatusCode)
+
+        expect(spy).toBeCalledTimes(expectedMaxRetries)
+
         const resultErrors = errors.map(err => err.toString())
         expect(resultErrors).toEqual(expectedErrors)
 
-        expect(spy).toBeCalledTimes(expectedMaxRetries)
         jest.clearAllTimers()
         setTimeout(done, 10)
       })

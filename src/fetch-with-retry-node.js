@@ -5,13 +5,13 @@ const fetch =
   require('node-fetch')
 
 const FetchWithRetryError =
-  require('../fetch-with-retry-error')
+  require('./fetch-with-retry-error.js')
 
 const retryOptionsParser =
-  require('../retry-options-parser')
+  require('./retry-options-parser.js')
 
 const sleep =
-  require('../sleep')
+  require('./sleep.js')
 
 function createSignalTimeoutContext (signalTimeout) {
   const controller = new AbortController()

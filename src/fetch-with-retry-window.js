@@ -1,12 +1,12 @@
 /* global AbortController, fetch, Promise, window */
 const FetchWithRetryError =
-  require('../fetch-with-retry-error')
+  require('./fetch-with-retry-error.js')
 
 const retryOptionsParser =
-  require('../retry-options-parser')
+  require('./retry-options-parser.js')
 
 const sleep =
-  require('../sleep')
+  require('./sleep.js')
 
 const _setImmediate = window.setImmediate
   ? window.setImmediate

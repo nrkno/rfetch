@@ -25,7 +25,7 @@
     "util"
   ],
   "scripts": {
-    "lint": "standard fetchWithRetry lib/*",
+    "lint": "standard",
     "test": "jest test/**"
   },
   "babel": {

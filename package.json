@@ -7,6 +7,17 @@
   "browser": "dist/fetchWithRetry.min.js",
   "repository": "github.com/nrkno/fetch-with-retry",
   "license": "ISC",
+  "directories": {
+    "lib": "lib"
+  },
+  "files": [
+    "dist",
+    "impl"
+  ],
+  "scripts": {
+    "lint": "standard",
+    "test:src": "BABEL_ENV=test jest test/**"
+  },
   "devDependencies": {
     "abort-controller": "1.0.2",
     "babel-preset-env": "1.7.0",
@@ -22,16 +33,7 @@
     "standard": "12.0.1",
     "whatwg-fetch": "3.0.0"
   },
-  "directories": {
-    "lib": "lib"
-  },
-  "files": [
-    "impl"
-  ],
-  "scripts": {
-    "lint": "standard",
-    "test:src": "BABEL_ENV=test jest test/**"
-  },
+  "dependencies": {},
   "babel": {
     "env": {
       "test": {

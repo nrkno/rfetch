@@ -1,12 +1,7 @@
 /* global AbortController, fetch, Promise, window */
-const FetchWithRetryError =
-  require('./fetch-with-retry-error.js')
-
-const retryOptionsParser =
-  require('./retry-options-parser.js')
-
-const sleep =
-  require('./sleep.js')
+import FetchWithRetryError from './fetch-with-retry-error.js'
+import retryOptionsParser from './retry-options-parser.js'
+import sleep from './sleep.js'
 
 const _setImmediate = window.setImmediate
   ? window.setImmediate
@@ -38,6 +33,13 @@ function includes (list, value) {
   return list.indexOf(value) >= 0
 }
 
+/* used for test spies */
+const fetchProxy = {
+  fetch (url, options) {
+    return fetch(url, options)
+  }
+}
+
 function fetchWithRetryLoopAttempt (url, options, retryOptions, ctx) {
   const {
     signalTimeout,
@@ -51,7 +53,7 @@ function fetchWithRetryLoopAttempt (url, options, retryOptions, ctx) {
 
   options.signal = signalTimeoutContext.signal
 
-  return exports._fetch(url, options)
+  return fetchProxy.fetch(url, options)
     .then(response => {
       signalTimeoutContext.signalTimeoutDispatch = false
       if (statusCodes.includes(response.status)) {
@@ -129,6 +131,12 @@ function fetchWithRetry (url, options = null, retryOptions = null) {
   ))
 }
 
-module.exports = exports = fetchWithRetry
-exports._fetch = fetch
-exports._createSignalTimeoutContext = createSignalTimeoutContext
+/* es6 module export (used internally) */
+export default fetchWithRetry
+
+/* umd exports */
+export {
+  createSignalTimeoutContext,
+  fetchProxy,
+  fetchWithRetry
+}

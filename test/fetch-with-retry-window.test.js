@@ -1,18 +1,18 @@
+/* global beforeAll, afterAll, beforeEach, afterEach, describe, expect, jest, test */
 /**
  * @jest-environment jsdom
  */
-/* global beforeAll, afterAll, beforeEach, afterEach, describe, expect, jest, test */
+import './fetch-with-retry-window-polyfill'
+import nock from 'nock'
 
-/* polyfill AbortController, fetch, and Promise */
-global.AbortController = require('abort-controller')
-global.fetch = require('whatwg-fetch').fetch
-require('es6-promise').polyfill()
+import {
+  createSignalTimeoutContext,
+  fetchProxy,
+  fetchWithRetry
+} from '../src/fetch-with-retry-window.js'
 
-const nock = require('nock')
-
-const fetchWithRetry = require('../src/fetch-with-retry-window.js')
-const sleep = require('../src/sleep.js')
-const server = require('./server.js')
+import sleep from '../src/sleep.js'
+import server from './server.js'
 
 describe('fetch with retry for window', () => {
   // setup and teardown
@@ -35,7 +35,7 @@ describe('fetch with retry for window', () => {
 
   let spy
   beforeEach(() => {
-    spy = jest.spyOn(fetchWithRetry, '_fetch')
+    spy = jest.spyOn(fetchProxy, 'fetch')
   })
 
   afterEach(() => {
@@ -44,7 +44,7 @@ describe('fetch with retry for window', () => {
   })
 
   test('Should call createSignalTimeoutContext when signal is signalTimeout is run', (done) => {
-    const signalTimeoutContext = fetchWithRetry._createSignalTimeoutContext(10)
+    const signalTimeoutContext = createSignalTimeoutContext(10)
     signalTimeoutContext.signal.addEventListener('abort', () => {
       expect(signalTimeoutContext.signal.aborted).toBe(true)
       done()

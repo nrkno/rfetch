@@ -26,6 +26,7 @@
     "lib": "lib"
   },
   "files": [
+    "dist",
     "impl"
   ],
   "scripts": {

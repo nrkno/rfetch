@@ -8,6 +8,7 @@
   "devDependencies": {
     "abort-controller": "1.0.2",
     "es6-promise": "4.2.5",
+    "ghooks": "2.0.4",
     "jest": "23.6.0",
     "nock": "10.0.2",
     "node-fetch": "2.3.0",
@@ -23,6 +24,12 @@
   ],
   "scripts": {
     "lint": "standard fetchWithRetry lib/*",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest test/**"
+  },
+  "config": {
+    "ghooks": {
+      "pre-commit": "npm run lint",
+      "pre-push": "npm run test"
+    }
   }
 }

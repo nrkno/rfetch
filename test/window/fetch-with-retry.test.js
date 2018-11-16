@@ -18,7 +18,7 @@ describe('fetch with retry for window', () => {
   // setup and teardown
   beforeAll(async () => {
     try {
-      await server.start(30001)
+      await server.start(30002)
     } catch (err) {
       console.error(err)
     }

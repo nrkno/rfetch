@@ -7,6 +7,7 @@
   "license": "ISC",
   "devDependencies": {
     "abort-controller": "1.0.2",
+    "babel-preset-env": "1.7.0",
     "es6-promise": "4.2.5",
     "ghooks": "2.0.4",
     "jest": "23.6.0",
@@ -26,6 +27,11 @@
   "scripts": {
     "lint": "standard fetchWithRetry lib/*",
     "test": "jest test/**"
+  },
+  "babel": {
+    "presets": [
+      "env"
+    ]
   },
   "config": {
     "ghooks": {

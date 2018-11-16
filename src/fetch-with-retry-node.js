@@ -1,17 +1,9 @@
-const AbortController =
-  require('abort-controller')
+import AbortController from 'abort-controller'
+import fetch from 'node-fetch'
 
-const fetch =
-  require('node-fetch')
-
-const FetchWithRetryError =
-  require('./fetch-with-retry-error.js')
-
-const retryOptionsParser =
-  require('./retry-options-parser.js')
-
-const sleep =
-  require('./sleep.js')
+import FetchWithRetryError from './fetch-with-retry-error.js'
+import retryOptionsParser from './retry-options-parser.js'
+import sleep from './sleep.js'
 
 function createSignalTimeoutContext (signalTimeout) {
   const controller = new AbortController()
@@ -35,6 +27,9 @@ function createSignalTimeoutContext (signalTimeout) {
 
   return context
 }
+
+/* used for test spies */
+const fetchProxy = { fetch }
 
 /**
  * Fetch with retry
@@ -61,7 +56,7 @@ async function fetchWithRetry (url, options = null, retryOptions = null) {
       const signalTimeoutContext = createSignalTimeoutContext(signalTimeout, url)
       options.signal = signalTimeoutContext.signal
 
-      const response = await exports._fetch(url, options)
+      const response = await fetchProxy.fetch(url, options)
       signalTimeoutContext.signalTimeoutDispatch = false
       if (statusCodes.includes(response.status)) {
         return response
@@ -101,6 +96,12 @@ async function fetchWithRetry (url, options = null, retryOptions = null) {
   }
 }
 
-module.exports = exports = fetchWithRetry
-exports._fetch = fetch
-exports._createSignalTimeoutContext = createSignalTimeoutContext
+/* es6 module export (used internally) */
+export default fetchWithRetry
+
+/* umd exports */
+export {
+  createSignalTimeoutContext,
+  fetchProxy,
+  fetchWithRetry
+}

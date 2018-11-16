@@ -1,9 +1,17 @@
 /* global beforeAll, afterAll, beforeEach, afterEach, describe, expect, jest, test */
-const nock = require('nock')
+/**
+ * @jest-environment node
+ */
+import nock from 'nock'
 
-const fetchWithRetry = require('../src/fetch-with-retry-node.js')
-const sleep = require('../src/sleep.js')
-const server = require('./server.js')
+import {
+  createSignalTimeoutContext,
+  fetchProxy,
+  fetchWithRetry
+} from '../src/fetch-with-retry-node.js'
+
+import sleep from '../src/sleep.js'
+import server from './server.js'
 
 describe('fetch with retry for node', () => {
   // setup and teardown
@@ -27,7 +35,7 @@ describe('fetch with retry for node', () => {
 
   let spy
   beforeEach(() => {
-    spy = jest.spyOn(fetchWithRetry, '_fetch')
+    spy = jest.spyOn(fetchProxy, 'fetch')
   })
 
   afterEach(() => {
@@ -36,7 +44,7 @@ describe('fetch with retry for node', () => {
   })
 
   test('Should call createSignalTimeoutContext when signal is signalTimeout is run', (done) => {
-    const signalTimeoutContext = fetchWithRetry._createSignalTimeoutContext(10)
+    const signalTimeoutContext = createSignalTimeoutContext(10)
     signalTimeoutContext.signal.addEventListener('abort', () => {
       expect(signalTimeoutContext.signal.aborted).toBe(true)
       done()
@@ -48,12 +56,21 @@ describe('fetch with retry for node', () => {
     const url = `http://localhost/unavailable`
     const options = {}
     const defaultRetryTimeout = 100
+    const errors = []
     const retryOptions = {
       maxRetries: 5,
-      retryTimeout: defaultRetryTimeout
+      retryTimeout: defaultRetryTimeout,
+      errors
     }
 
     const expectedMaxRetries = 5
+    const expectedErrors = [
+      'FetchWithRetryError: Response.status: <503>, not in expected statusCodes: <[200]> attempt: <1>, willRetry: <true>.',
+      'FetchWithRetryError: Response.status: <503>, not in expected statusCodes: <[200]> attempt: <2>, willRetry: <true>.',
+      'FetchWithRetryError: Response.status: <503>, not in expected statusCodes: <[200]> attempt: <3>, willRetry: <true>.',
+      'FetchWithRetryError: Response.status: <503>, not in expected statusCodes: <[200]> attempt: <4>, willRetry: <true>.',
+      'FetchWithRetryError: Response.status: <503>, not in expected statusCodes: <[200]> attempt: <5>, willRetry: <false>.'
+    ]
 
     // Mock http calls
     for (let i = 0; i < expectedMaxRetries; i++) {
@@ -62,10 +79,13 @@ describe('fetch with retry for node', () => {
         .reply(503, '')
     }
 
-    // Act
+    // Act + Assert
     fetchWithRetry(url, options, retryOptions)
       .catch(e => {
-        // Assert
+        const resultErrors =
+          errors.map(err => err.toString())
+
+        expect(resultErrors).toEqual(expectedErrors)
         expect(spy).toBeCalledTimes(expectedMaxRetries)
         setTimeout(done, 10)
       })

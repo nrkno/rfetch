@@ -69,10 +69,17 @@ function parse (options = {}) {
   return parsedOptions
 }
 
-module.exports = exports = {
+// es6 module exports (used internally)
+export default {
+  _parseInteger: parseInteger,
+  _parseIntegerArray: parseIntegerArray,
+
   defaultRetryOptions,
   parse
 }
 
-exports._parseInteger = parseInteger
-exports._parseIntegerArray = parseIntegerArray
+// umd exports
+export {
+  defaultRetryOptions,
+  parse
+}

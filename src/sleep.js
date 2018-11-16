@@ -2,10 +2,8 @@
  * @param {Number} timeout
  * @returns {Promise<void>}
  */
-function sleep (timeout) {
+export default function sleep (timeout) {
   return new Promise((resolve) => {
     setTimeout(resolve, timeout)
   })
 }
-
-module.exports = sleep

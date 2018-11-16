@@ -1,6 +1,6 @@
 /* global beforeAll, afterAll, beforeEach, afterEach, describe, expect, jest, test */
-const fetchWithRetry = require('../../node/fetch-with-retry')
-const sleep = require('../../sleep')
+const fetchWithRetry = require('../../src/node/fetch-with-retry')
+const sleep = require('../../src/sleep')
 const nock = require('nock')
 const server = require('../server')
 

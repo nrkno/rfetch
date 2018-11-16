@@ -1,5 +1,5 @@
 /* global describe, expect, test */
-const retryOptionsParser = require('../retry-options-parser')
+const retryOptionsParser = require('../src/retry-options-parser')
 
 describe('retryOptionsParser', () => {
   test('parseInteger', () => {

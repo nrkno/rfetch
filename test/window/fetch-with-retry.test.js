@@ -8,9 +8,9 @@ global.AbortController = require('abort-controller')
 global.fetch = require('whatwg-fetch').fetch
 require('es6-promise').polyfill()
 
-const fetchWithRetry = require('../../window/fetch-with-retry')
+const fetchWithRetry = require('../../src/window/fetch-with-retry')
 
-const sleep = require('../../sleep')
+const sleep = require('../../src/sleep')
 const nock = require('nock')
 const server = require('../server')
 

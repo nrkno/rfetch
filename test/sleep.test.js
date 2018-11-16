@@ -1,5 +1,5 @@
 /* global describe, expect, test, jest */
-const sleep = require('../sleep')
+const sleep = require('../src/sleep')
 
 describe('sleep', () => {
   test('fake setTimeout should have been called only once', async (done) => {

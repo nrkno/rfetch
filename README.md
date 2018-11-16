@@ -27,5 +27,7 @@ TBD
 
 ## TODO:
 
+- Add check on missing AbortController, fetch, Promise for browser dist build
+- Test dist build
 - Add typings
 - More complete informations about how to use, and available options

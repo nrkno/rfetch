@@ -8,10 +8,10 @@ import {
   createSignalTimeoutContext,
   fetchProxy,
   fetchWithRetry
-} from '../src/fetch-with-retry-node.js'
+} from '../../src/fetch-with-retry-node.js'
 
-import sleep from '../src/sleep.js'
-import server from './server.js'
+import sleep from '../../src/sleep.js'
+import server from '../server.js'
 
 describe('fetch with retry for node', () => {
   // setup and teardown

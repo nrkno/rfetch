@@ -1,4 +1,8 @@
-/* global AbortController, fetch, Promise, window */
+/* global window */
+import AbortController from 'abort-controller'
+import { fetch } from 'whatwg-fetch'
+import { Promise } from 'es6-promise'
+
 import FetchWithRetryError from './fetch-with-retry-error.js'
 import retryOptionsParser from './retry-options-parser.js'
 import sleep from './sleep.js'

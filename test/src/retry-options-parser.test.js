@@ -1,5 +1,5 @@
 /* global describe, expect, test */
-import retryOptionsParser from '../src/retry-options-parser.js'
+import retryOptionsParser from '../../src/retry-options-parser.js'
 
 describe('retryOptionsParser', () => {
   test('parseInteger', () => {

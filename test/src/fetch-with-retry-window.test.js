@@ -2,17 +2,16 @@
 /**
  * @jest-environment jsdom
  */
-import './fetch-with-retry-window-polyfill'
 import nock from 'nock'
 
 import {
   createSignalTimeoutContext,
   fetchProxy,
   fetchWithRetry
-} from '../src/fetch-with-retry-window.js'
+} from '../../src/fetch-with-retry-window.js'
 
-import sleep from '../src/sleep.js'
-import server from './server.js'
+import sleep from '../../src/sleep.js'
+import server from '../server.js'
 
 describe('fetch with retry for window', () => {
   // setup and teardown

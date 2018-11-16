@@ -11,7 +11,7 @@ export default [
   {
     input: './rollup/fetch-with-retry-node.rollup.js',
     output: [
-      { file: 'impl/node/index.js', format: 'cjs', exports: 'named', interop: false, strict: false },
+      { file: 'impl/node/index.js', format: 'cjs', exports: 'default', strict: false },
       { file: 'impl/node/index.mjs', format: 'es', exports: 'named' }
     ],
     preferConst: true,
@@ -23,7 +23,7 @@ export default [
     input: './rollup/fetch-with-retry-window.rollup.js',
     output: [
 
-      { file: 'impl/window/index.js', format: 'cjs', exports: 'named', interop: false, strict: false },
+      { file: 'impl/window/index.js', format: 'cjs', exports: 'default', strict: false },
       { file: 'impl/window/index.mjs', format: 'es', exports: 'named' }
     ],
     preferConst: true,

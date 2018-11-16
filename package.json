@@ -16,7 +16,8 @@
   ],
   "scripts": {
     "lint": "standard",
-    "test:src": "BABEL_ENV=test jest test/**"
+    "test:src": "BABEL_ENV=test-src jest test/**",
+    "test:impl": "BABEL_ENV=test jest test/impl/**"
   },
   "devDependencies": {
     "abort-controller": "1.0.2",

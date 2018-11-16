@@ -1,2 +1,1 @@
-import { fetchWithRetry } from '../src/fetch-with-retry-window.js'
-export default fetchWithRetry
+export { default } from '../src/fetch-with-retry-window.js'

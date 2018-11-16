@@ -62,8 +62,9 @@ function parse (options = {}) {
   }
 
   // will put received fetch errors in this array
-  parsedOptions.errors =
-    Array.isArray(options.errors) || []
+  parsedOptions.errors = Array.isArray(options.errors)
+    ? options.errors
+    : []
 
   return parsedOptions
 }

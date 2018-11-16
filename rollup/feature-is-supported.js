@@ -1,5 +1,8 @@
-export default function featureIsSupported(feature) {
+/* global */
+export default function windowFeatureIsSupported (feature) {
   try {
-
-  } catch ()
+    return window[feature].constructor !== null
+  } catch (e) {
+    return false
+  }
 }

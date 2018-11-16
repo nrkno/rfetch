@@ -34,6 +34,10 @@ function createSignalTimeoutContext (signalTimeout) {
   return context
 }
 
+function includes (list, value) {
+  return list.indexOf(value) >= 0
+}
+
 function fetchWithRetryLoopAttempt (url, options, retryOptions, ctx) {
   const {
     signalTimeout,
@@ -54,7 +58,7 @@ function fetchWithRetryLoopAttempt (url, options, retryOptions, ctx) {
         return response
       }
 
-      if (retryStatusCodes.length && !retryStatusCodes.includes(response.status)) {
+      if (retryStatusCodes.length && !includes(retryStatusCodes, response.status)) {
         const message =
           `Response.status: <${response.status}>, ` +
           `is not retryStatusCodes: <[${retryStatusCodes.join(', ')}]> ` +
@@ -65,7 +69,7 @@ function fetchWithRetryLoopAttempt (url, options, retryOptions, ctx) {
         throw new FetchWithRetryError(message)
       }
 
-      if (retryStatusCodes.length && retryStatusCodes.includes(response.status)) {
+      if (retryStatusCodes.length && includes(retryStatusCodes, response.status)) {
         throw new FetchWithRetryError(
           `Response.status: <${response.status}>, ` +
           `is in retryStatusCodes: <[${retryStatusCodes.join(', ')}]> ` +

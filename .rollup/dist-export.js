@@ -1,13 +1,13 @@
 /* Guard checks for Promise, Fetch and AbortController implementations */
-if (!Object.prototype.toString.call(typeof Promise !== 'undefined' ? Promise : 0)) {
+if (!!(typeof Promise !== 'undefined' ? Promise : null)) {
   throw new Error('No Promise available implementation please ensure a polyfill available')
 }
 
-if (!Object.prototype.toString.call(typeof fetch !== 'undefined' ? fetch : 0)) {
+if (!!(typeof fetch !== 'undefined' ? fetch : null)) {
   throw new Error('No fetch available implementation please ensure a polyfill available')
 }
 
-if (!Object.prototype.toString.call(typeof AbortController !== 'undefined' ? AbortController : 0)) {
+if (!!(typeof AbortController !== 'undefined' ? AbortController : null)) {
   throw new Error('No AbortController implementation available please ensure a polyfill available')
 }
 

@@ -12,11 +12,13 @@ import psleep from './util/psleep.js'
  * @param {AbortController} controller
  * @param {SignalTimeoutContext} context
  */
-async function abort (controller, context) {
-  await psleep(context.signalTimeout)
-  if (context.abort) {
-    controller.abort()
-  }
+function abort (controller, context) {
+  psleep(context.signalTimeout)
+    .then(() => {
+      if (context.abort) {
+        controller.abort()
+      }
+    })
 }
 
 /**

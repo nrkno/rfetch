@@ -1,11 +1,7 @@
-// import commonjs from 'rollup-plugin-commonjs'
-// import json from 'rollup-plugin-json'
-// import resolve from 'rollup-plugin-node-resolve'
-import babel from 'rollup-plugin-babel'
 import buble from 'rollup-plugin-buble'
-import { uglify } from 'rollup-plugin-uglify'
 import cleanup from 'rollup-plugin-cleanup'
 import replace from 'rollup-plugin-replace'
+import { uglify } from 'rollup-plugin-uglify'
 
 /*
   options.format = [system, amd, cjs, es, iife, umd],
@@ -37,12 +33,7 @@ export default [
           transforms: { dangerousForOf: true }
         }
       ),
-      babel({
-        exclude: 'node_modules/**',
-        plugins: [
-          'babel-plugin-async-to-promises'
-        ]
-      })
+      uglify()
     ]
   },
 

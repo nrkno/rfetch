@@ -1,5 +1,5 @@
 /**
- * @param {Number} timeout timeout in miliseconds
+ * @param {number} timeout timeout in miliseconds
  * @returns {Promise<void>}
  */
 export default function sleep (timeout) {

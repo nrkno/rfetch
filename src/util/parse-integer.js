@@ -1,6 +1,6 @@
 /**
- * @param {Number} value
- * @returns {(Number|null)}
+ * @param {number} value
+ * @returns {(number|null)}
  */
 export default function parseInteger (value) {
   if (!value) {

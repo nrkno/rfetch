@@ -34,15 +34,15 @@ function create (signalTimeout) {
     abort: true
   }
 
-  setTimeout(functions.abort, 1, controller, context)
+  setTimeout(definitions.abort, 1, controller, context)
   return context
 }
 
-const functions = {
+const definitions = {
   abort
 }
 
 export default {
-  functions,
+  definitions,
   create
 }

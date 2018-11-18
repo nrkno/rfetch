@@ -5,7 +5,7 @@ describe('SignalTimeoutContext', () => {
   let signalSpy
   let timeoutSpy
   beforeEach(() => {
-    signalSpy = jest.spyOn(SignalTimeoutContext.functions, 'abort')
+    signalSpy = jest.spyOn(SignalTimeoutContext.definitions, 'abort')
     timeoutSpy = jest.spyOn(global, 'setTimeout')
   })
   afterEach(() => {

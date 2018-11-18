@@ -1,5 +1,5 @@
 /* global describe, expect, test, jest */
-import sleep from '../../src/sleep.js'
+import sleep from '../../../src/util/sleep.js'
 
 describe('sleep', () => {
   test('fake setTimeout should have been called only once', async (done) => {

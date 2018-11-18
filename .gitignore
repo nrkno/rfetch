@@ -6,13 +6,13 @@ yarn-debug.log*
 yarn-error.log*
 
 # dist for browser umd minified files
-dist
+/dist
 
 # implementation via require
-impl
+/lib
 
 # Dependency directories
-node_modules/
+/node_modules
 
 # dotenv environment variables file
 .env

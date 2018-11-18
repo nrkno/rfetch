@@ -1,3 +1,6 @@
+import parseInteger from './util/parse-integer.js'
+import parseIntegerArray from './util/parse-integer-array.js'
+
 const defaultRetryOptions = {
   signalTimeout: 1000,
   statusCodes: [ 200 ],
@@ -5,34 +8,6 @@ const defaultRetryOptions = {
   retryTimeout: 100,
   retryStatusCodes: [ ],
   errors: []
-}
-
-// Helper methods
-function parseInteger (value) {
-  if (!value) {
-    return null
-  }
-
-  if (Array.isArray(value)) {
-    return null
-  }
-
-  const result = Number(value)
-  if (isNaN(result)) {
-    return null
-  }
-
-  return parseInt(result)
-}
-
-function parseIntegerArray (list) {
-  if (!Array.isArray(list)) {
-    const value = parseInteger(list)
-    return value ? [ value ] : null
-  }
-
-  return list.map(parseInteger)
-    .filter(value => value !== null)
 }
 
 /**
@@ -69,17 +44,7 @@ function parse (options = {}) {
   return parsedOptions
 }
 
-// es6 module exports (used internally)
 export default {
-  _parseInteger: parseInteger,
-  _parseIntegerArray: parseIntegerArray,
-
-  defaultRetryOptions,
-  parse
-}
-
-// umd exports
-export {
   defaultRetryOptions,
   parse
 }

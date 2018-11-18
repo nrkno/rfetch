@@ -16,13 +16,15 @@
   ],
   "scripts": {
     "lint": "standard",
-    "build": "rollup -c",
+    "build": "rollup -c .rollup/rollup.config.js",
     "test": "npm run test:src && npm run test:impl",
     "test:src": "BABEL_ENV=test-src jest test/**",
     "test:impl": "BABEL_ENV=test jest test/impl/**"
   },
   "devDependencies": {
+    "@babel/core": "7.1.6",
     "abort-controller": "1.0.2",
+    "babel-plugin-async-to-promises": "1.0.5",
     "babel-preset-env": "1.7.0",
     "es6-promise": "4.2.5",
     "ghooks": "2.0.4",
@@ -32,6 +34,9 @@
     "rollup": "0.67.1",
     "rollup-plugin-babel": "4.0.3",
     "rollup-plugin-buble": "0.19.4",
+    "rollup-plugin-cleanup": "3.0.0",
+    "rollup-plugin-node-resolve": "3.4.0",
+    "rollup-plugin-replace": "2.1.0",
     "rollup-plugin-uglify": "6.0.0",
     "standard": "12.0.1",
     "whatwg-fetch": "3.0.0"

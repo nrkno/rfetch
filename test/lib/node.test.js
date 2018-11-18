@@ -29,6 +29,12 @@ describe('fetch with retry for node', () => {
     server.clearMocks()
   })
 
+  test('Should have loaded the node-fetch implementation', () => {
+    const keys = Object.keys(require.cache)
+    const result = keys.find(key => /node_modules\/node-fetch/.test(key)) !== undefined
+    expect(result).toBe(false)
+  })
+
   test('Should fail after [signal error, 408, signal error, 503, signal error]', async (done) => {
     // Arrange
     const path = '/vary-responses-signal-408-signal-503-signal'

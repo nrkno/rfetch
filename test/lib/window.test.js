@@ -2,20 +2,16 @@
 /**
  * @jest-environment jsdom
  */
-import sleep from '../../src/sleep.js'
-import server from '../server.js'
-global.fetch = require('whatwg-fetch').fetch
-global.Promise = require('es6-promise').Promise
-global.AbortController = require('abort-controller')
-
-const fetchWithRetry = require('../../impl/window/index.js')
+import './window.polyfill.js'
+import sleep from '../../src/util/sleep.js'
+import server from '../common/server.js'
+import fetchWithRetry from '../../lib/index.js'
 
 describe('fetch with retry for node', () => {
   beforeAll(async () => {
     try {
       await server.start(30004)
     } catch (err) {
-      console.error(err)
       process.exit(1)
     }
   })
@@ -31,6 +27,12 @@ describe('fetch with retry for node', () => {
 
   afterEach(() => {
     server.clearMocks()
+  })
+
+  test('Should not have loaded the node-fetch implementation', () => {
+    const keys = Object.keys(require.cache)
+    const result = keys.find(key => /node_modules\/node-fetch/.test(key)) !== undefined
+    expect(result).toBe(false)
   })
 
   test('Should fail after [signal error, 408, signal error, 503, signal error]', async (done) => {

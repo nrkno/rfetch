@@ -13,7 +13,7 @@ import sleep from './util/sleep'
  * @param {SignalTimeoutContext} context
  */
 async function abort (controller, context) {
-  await sleep(context.timeout)
+  await sleep(context.signalTimeout)
   if (context.abort) {
     controller.abort()
   }

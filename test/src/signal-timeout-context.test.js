@@ -2,20 +2,30 @@
 import SignalTimeoutContext from '../../src/signal-timeout-context.js'
 
 describe('SignalTimeoutContext', () => {
-  let spy
+  let signalSpy
+  let timeoutSpy
   beforeEach(() => {
-    spy = jest.spyOn(SignalTimeoutContext.functions, 'abort')
+    signalSpy = jest.spyOn(SignalTimeoutContext.functions, 'abort')
+    timeoutSpy = jest.spyOn(global, 'setTimeout')
   })
   afterEach(() => {
-    spy.mockRestore()
+    signalSpy.mockRestore()
+    timeoutSpy.mockRestore()
   })
 
   test('Should dispatch event abort when signal signalTimeout has run out', (done) => {
     // Arrange
-    const ctx = SignalTimeoutContext.create(10)
+    const signalTimeout = 10
+    const ctx = SignalTimeoutContext.create(signalTimeout)
     ctx.signal.addEventListener('abort', () => {
       expect(ctx.signal.aborted).toBe(true)
-      expect(spy).toHaveBeenCalledTimes(1)
+      expect(signalSpy).toHaveBeenCalledTimes(1)
+      expect(signalSpy.mock.calls[0][1]).toBe(ctx)
+
+      // defered call
+      expect(timeoutSpy.mock.calls[0][1]).toBe(1)
+      // sleep call
+      expect(timeoutSpy.mock.calls[1][1]).toBe(signalTimeout)
       done()
     })
   })
@@ -28,7 +38,8 @@ describe('SignalTimeoutContext', () => {
     ctx.abort = false
     setTimeout(() => {
       expect(ctx.signal.aborted).toBe(false)
-      expect(spy).toHaveBeenCalledTimes(1)
+      expect(signalSpy).toHaveBeenCalledTimes(1)
+      expect(timeoutSpy).toHaveBeenCalledTimes(1)
       done()
     }, 10)
   })

@@ -13,6 +13,8 @@ describe('sleep', () => {
     expect(spy).toHaveBeenCalledTimes(0)
     return sleep(timeout).then(() => {
       expect(spy).toHaveBeenCalledTimes(1)
+      expect(spy.mock.calls[0][1]).toBe(timeout)
+      spy.mockRestore()
       done()
     })
   })

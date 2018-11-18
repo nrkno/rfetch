@@ -10,7 +10,7 @@ const fetchWithRetry = require('../../dist/fetch-with-retry.min.js')
 describe('fetch with retry for node', () => {
   beforeAll(async () => {
     try {
-      await server.start(30004)
+      await server.start(30005)
     } catch (err) {
       process.exit(1)
     }

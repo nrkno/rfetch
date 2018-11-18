@@ -2,9 +2,9 @@
   "name": "fetch-with-retry",
   "version": "1.0.0",
   "description": "",
-  "main": "impl/index.js",
-  "module": "impl/index.mjs",
-  "browser": "dist/fetchWithRetry.min.js",
+  "main": "lib/index.js",
+  "module": "lib/index.mjs",
+  "browser": "dist/fetch-with-retry.min.js",
   "repository": "github.com/nrkno/fetch-with-retry",
   "license": "ISC",
   "directories": {
@@ -17,9 +17,9 @@
   "scripts": {
     "lint": "standard",
     "build": "rollup -c .rollup/rollup.config.js",
-    "test": "npm run test:src && npm run test:impl",
+    "test": "npm run test:src && npm run test:lib",
     "test:src": "BABEL_ENV=test-src jest test/**",
-    "test:impl": "BABEL_ENV=test jest test/impl/**"
+    "test:lib": "BABEL_ENV=test jest test/lib/**"
   },
   "devDependencies": {
     "@babel/core": "7.1.6",

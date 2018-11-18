@@ -1,8 +1,7 @@
 import FetchWithRetryError from './fetch-with-retry-error.js'
-import SignalTimeoutContext from './signal-timeout-context'
-import fetchProxy from './fetch-proxy'
-
-import retryOptionsParser from './retry-options-parser.js'
+import SignalTimeoutContext from './signal-timeout-context.js'
+import RetryOptions from './retry-options.js'
+import fetchImpl from './fetch-impl.js'
 import sleep from './util/sleep.js'
 import includes from './util/includes.js'
 
@@ -22,14 +21,14 @@ async function fetchWithRetry (url, options = null, retryOptions = null) {
     retryTimeout,
     retryStatusCodes,
     errors
-  } = retryOptionsParser.parse(retryOptions)
+  } = RetryOptions.parse(retryOptions)
 
   for (let n = 0; n < maxRetries; n++) {
     try {
       const signalTimeoutContext = SignalTimeoutContext.create(signalTimeout, url)
       options.signal = signalTimeoutContext.signal
 
-      const response = await fetchProxy.fetch(url, options)
+      const response = await fetchImpl.fetch(url, options)
       signalTimeoutContext.abort = false
       if (includes(statusCodes, response.status)) {
         return response

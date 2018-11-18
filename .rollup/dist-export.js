@@ -1,2 +1,2 @@
 /* global window */
-export { default } from 'src/fetch-with-retry-window.js'
+export { default } from '../src/fetch-with-retry.js'

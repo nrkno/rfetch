@@ -3,8 +3,8 @@
  * @jest-environment node
  */
 import sleep from '../../src/util/sleep.js'
-import server from '../server.js'
-const fetchWithRetry = require('../../impl/node/index.js')
+import server from '../common/server.js'
+import fetchWithRetry from '../../lib/index.js'
 
 describe('fetch with retry for node', () => {
   beforeAll(async () => {

@@ -17,7 +17,7 @@ export default [
     input: '.rollup/dist-export.js',
     output: [
       {
-        file: 'dist/fetchWithRetry.min.js',
+        file: 'dist/fetch-with-retry.min.js',
         format: 'umd',
         exports: 'default',
         name: 'fetchWithRetry',
@@ -32,24 +32,23 @@ export default [
       replace({
         'process.browser': true
       }),
-      babel({
-        exclude: 'node_modules/**',
-        plugins: [
-          'babel-plugin-async-to-promises'
-        ]
-      }),
       buble(
         {
           transforms: { dangerousForOf: true }
         }
       ),
-      uglify()
+      babel({
+        exclude: 'node_modules/**',
+        plugins: [
+          'babel-plugin-async-to-promises'
+        ]
+      })
     ]
   },
 
   /* build lib/index.{js|mjs} files entry */
   {
-    input: '.rollup/impl-node-export.js',
+    input: '.rollup/lib-export.js',
     output: [
 
       { file: 'lib/index.js', format: 'cjs', exports: 'default', strict: false },

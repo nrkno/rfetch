@@ -1,6 +1,6 @@
 /* global beforeAll, afterAll, afterEach, describe, expect, jest, test */
 /**
- * @jest-environment node
+ * @jest-environment jsdom
  */
 import sleep from '../../src/sleep.js'
 import server from '../server.js'

@@ -1,5 +1,5 @@
 /* global describe, expect, test, jest */
-import sleep from '../../../src/util/sleep.js'
+import psleep from '../../../src/util/psleep.js'
 
 describe('sleep', () => {
   test('fake setTimeout should have been called only once', async (done) => {
@@ -11,7 +11,7 @@ describe('sleep', () => {
 
     // Act + Assert
     expect(spy).toHaveBeenCalledTimes(0)
-    return sleep(timeout).then(() => {
+    return psleep(timeout).then(() => {
       expect(spy).toHaveBeenCalledTimes(1)
       expect(spy.mock.calls[0][1]).toBe(timeout)
       spy.mockRestore()

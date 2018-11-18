@@ -2,7 +2,7 @@ import FetchWithRetryError from './fetch-with-retry-error.js'
 import SignalTimeoutContext from './signal-timeout-context.js'
 import RetryOptions from './retry-options.js'
 import fetchImpl from './fetch-impl.js'
-import sleep from './util/sleep.js'
+import psleep from './util/psleep.js'
 import includes from './util/includes.js'
 
 /**
@@ -63,7 +63,7 @@ async function fetchWithRetry (url, options = null, retryOptions = null) {
       if (n + 1 === maxRetries) {
         throw err
       }
-      await sleep(retryTimeout)
+      await psleep(retryTimeout)
     }
   }
 }

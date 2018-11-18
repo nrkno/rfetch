@@ -3,7 +3,7 @@
  * @jest-environment jsdom
  */
 import './window.polyfill.js'
-import sleep from '../../src/util/sleep.js'
+import psleep from '../../src/util/psleep.js'
 import server from '../common/server.js'
 import fetchWithRetry from '../../lib/index.js'
 
@@ -63,7 +63,7 @@ describe('fetch with retry for node', () => {
       path,
       // signal (slow network)
       async () => {
-        await sleep(200)
+        await psleep(200)
         return {
           statusCode: 501,
           body: '',
@@ -84,7 +84,7 @@ describe('fetch with retry for node', () => {
       },
       // signal (slow network)
       async () => {
-        await sleep(200)
+        await psleep(200)
         return {
           statusCode: 503,
           body: '',
@@ -105,7 +105,7 @@ describe('fetch with retry for node', () => {
       },
       // ok
       async () => {
-        await sleep(200)
+        await psleep(200)
         return {
           statusCode: 200,
           body: 'OK',
@@ -175,7 +175,7 @@ describe('fetch with retry for node', () => {
       },
       // signal error
       async () => {
-        await sleep(200)
+        await psleep(200)
         return {
           statusCode: 408,
           body: '',

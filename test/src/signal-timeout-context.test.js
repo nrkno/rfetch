@@ -16,6 +16,8 @@ describe('SignalTimeoutContext', () => {
   test('Should dispatch event abort when signal signalTimeout has run out', (done) => {
     // Arrange
     const signalTimeout = 10
+
+    // Act + Assert
     const ctx = SignalTimeoutContext.create(signalTimeout)
     ctx.signal.addEventListener('abort', () => {
       expect(ctx.signal.aborted).toBe(true)
@@ -32,14 +34,15 @@ describe('SignalTimeoutContext', () => {
 
   test('Should not dispatch event abort when signal signalTimeout has run out', (done) => {
     // Arrange
-    jest.useRealTimers()
+    const signalTimeout = 10
 
-    const ctx = SignalTimeoutContext.create(10)
+    // Act + Assert
+    const ctx = SignalTimeoutContext.create(signalTimeout)
     ctx.abort = false
     setTimeout(() => {
       expect(ctx.signal.aborted).toBe(false)
       expect(signalSpy).toHaveBeenCalledTimes(1)
-      expect(timeoutSpy).toHaveBeenCalledTimes(1)
+      expect(signalSpy.mock.calls[0][1]).toBe(ctx)
       done()
     }, 10)
   })

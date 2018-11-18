@@ -1,5 +1,5 @@
 import AbortController from 'abort-controller'
-import sleep from './util/sleep'
+import psleep from './util/psleep.js'
 
 /**
  * @typedef {Object} SignalTimeoutContext
@@ -13,7 +13,7 @@ import sleep from './util/sleep'
  * @param {SignalTimeoutContext} context
  */
 async function abort (controller, context) {
-  await sleep(context.signalTimeout)
+  await psleep(context.signalTimeout)
   if (context.abort) {
     controller.abort()
   }

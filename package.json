@@ -18,7 +18,7 @@
     "lint": "standard",
     "build": "rollup -c .rollup/rollup.config.js",
     "test": "npm run test:src && npm run test:lib",
-    "test:src": "BABEL_ENV=test-src jest test/**",
+    "test:src": "BABEL_ENV=test jest test/**",
     "test:lib": "BABEL_ENV=test jest test/lib/**"
   },
   "devDependencies": {

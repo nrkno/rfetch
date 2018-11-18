@@ -3,31 +3,25 @@ import parseIntegerArray from './util/parse-integer-array.js'
 
 /**
  * @typedef {Object} RetryOptions
- * @property {number} signalTimeout
- * @property {number[]} statusCodes
- * @property {number} maxRetries
- * @property {number} retryTimeout
- * @property {number[]} retryStatusCodes
- * @property {Error[]} errors
+ * @property {number} [signalTimeout=1000] - The signal timeout before aborting the request in ms.
+ * @property {(number|number[])} [resolveOn=[200]] - The status code(s) to resolve on
+ * @property {number} [retries=3] - The number of the time to retry
+ * @property {(number|number[])} [retryTimeout=[100]] - The retry timeout
+ * @property {(number|number[])} retryOn - The status code(s) to retry on
+ * @property {Error[]} errors - An array where to put the fetch errors in
  */
 
 /** @type {RetryOptions} */
 const defaultRetryOptions = {
   signalTimeout: 1000,
-  statusCodes: [ 200 ], // resolveOn
-  maxRetries: 3,
-  retryTimeout: 100,
-  retryStatusCodes: [ ], // retryOn ?
+  resolveOn: [ 200 ],
+  retries: 3,
+  retryTimeout: [ 100 ],
+  retryOn: [],
   errors: []
 }
 
 /**
- * Parse Retry Options
- *
- * @param {Object} options
- * @param {number} [options.maxRetries = 3] The number of retries
- * @param {number} [options.timeout = 100] The number of timeout in ms before next retry
- * @param {number[]} [options.statusCodes = [200]] The status codes to retry for if the status code is not expected
  * @returns {RetryOptions}
  */
 function parse (options = {}) {
@@ -37,12 +31,12 @@ function parse (options = {}) {
 
   const parsedOptions = options || {}
 
-  for (const key of ['maxRetries', 'retryTimeout', 'signalTimeout']) {
+  for (const key of ['signalTimeout', 'retries']) {
     parsedOptions[key] =
       parseInteger(options[key]) || defaultRetryOptions[key]
   }
 
-  for (const key of ['statusCodes', 'retryStatusCodes']) {
+  for (const key of ['resolveOn', 'retryTimeout', 'retryOn']) {
     parsedOptions[key] =
       parseIntegerArray(options[key]) || defaultRetryOptions[key]
   }

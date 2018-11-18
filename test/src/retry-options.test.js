@@ -6,10 +6,10 @@ describe('retryOptions', () => {
     // Arrange
     const defaultOptions = {
       signalTimeout: 1000,
-      statusCodes: [ 200 ],
-      maxRetries: 3,
-      retryTimeout: 100,
-      retryStatusCodes: [],
+      resolveOn: [ 200 ],
+      retries: 3,
+      retryTimeout: [ 100 ],
+      retryOn: [],
       errors: []
     }
 
@@ -21,8 +21,8 @@ describe('retryOptions', () => {
       [],
 
       // defined values
-      { signalTimeout: 600, statusCodes: 204, maxRetries: 2, retryTimeout: 200, retryStatusCodes: 404 },
-      { signalTimeout: 1200, statusCodes: [200, 201, 304], maxRetries: 5, retryTimeout: 300, retryStatusCodes: [408, 418, 429] }
+      { signalTimeout: 600, resolveOn: 204, retries: 2, retryTimeout: 200, retryOn: 404 },
+      { signalTimeout: 1200, resolveOn: [200, 201, 304], retries: 5, retryTimeout: [ 100, 300, 500 ], retryOn: [408, 418, 429] }
     ]
 
     const expectedValues = [
@@ -33,8 +33,8 @@ describe('retryOptions', () => {
       defaultOptions,
 
       // defined options set
-      { signalTimeout: 600, statusCodes: [ 204 ], maxRetries: 2, retryTimeout: 200, retryStatusCodes: [ 404 ], errors: [] },
-      { signalTimeout: 1200, statusCodes: [200, 201, 304], maxRetries: 5, retryTimeout: 300, retryStatusCodes: [408, 418, 429], errors: [] }
+      { signalTimeout: 600, resolveOn: [ 204 ], retries: 2, retryTimeout: [ 200 ], retryOn: [ 404 ], errors: [] },
+      { signalTimeout: 1200, resolveOn: [200, 201, 304], retries: 5, retryTimeout: [ 100, 300, 500 ], retryOn: [408, 418, 429], errors: [] }
     ]
 
     // Act

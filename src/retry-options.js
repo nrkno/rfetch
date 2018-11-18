@@ -14,10 +14,10 @@ import parseIntegerArray from './util/parse-integer-array.js'
 /** @type {RetryOptions} */
 const defaultRetryOptions = {
   signalTimeout: 1000,
-  statusCodes: [ 200 ],
+  statusCodes: [ 200 ], // resolveOn
   maxRetries: 3,
   retryTimeout: 100,
-  retryStatusCodes: [ ],
+  retryStatusCodes: [ ], // retryOn ?
   errors: []
 }
 

@@ -118,7 +118,7 @@ function retryFetchLoop (url, options, retryOptions, ctx) {
         // augment next loop iteration
         ctx.n = ctx.n + 1
 
-        // set nex timeoutIndex
+        // set next timeoutIndex
         if (ctx.timeoutIndex + 1 >= retryOptions.retryTimeout.length) {
           ctx.timeoutIndex = 0
         } else if (ctx.n > 1) {

@@ -244,7 +244,6 @@ describe('fetch with retry for node', () => {
       await rfetch(url, options, retryOptions)
     } catch (error) {
       // Assert
-      console.log('error', error)
       const resultErrors =
         context.errors.map(err => err.toString())
 

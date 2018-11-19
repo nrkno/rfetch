@@ -5,7 +5,7 @@ import parseIntegerArray from './util/parse-integer-array.js'
  * @typedef {Object} RetryOptions
  * @property {number} [signalTimeout=1000] - The signal timeout before aborting the request in ms.
  * @property {(number|number[])} [resolveOn=[200]] - The status code(s) to resolve on
- * @property {number} [retries=3] - The number of the time to retry
+ * @property {number} [retries=3] - The number of the times to retry
  * @property {(number|number[])} [retryTimeout=[100]] - The retry timeout
  * @property {(number|number[])} retryOn - The status code(s) to retry on
  * @property {Error[]} errors - An array where to put the fetch errors in

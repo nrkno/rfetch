@@ -27,5 +27,6 @@ TBD
 ## TODO:
 
 - Test dist build in browser automated via jest + puppeteer
+- Test mjs format also in node and browser
 - Add typings
 - More complete informations about how to use, and available options

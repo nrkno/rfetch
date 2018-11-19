@@ -1,5 +1,6 @@
 /* global window, fetch */
 import env from './util/env.js'
+import nodeFetch from 'node-fetch'
 
 const definitions = {}
 
@@ -13,7 +14,7 @@ const definitions = {}
 if (env.browser) {
   definitions.fetch = fetch.bind()
 } else if (env.process && !global.fetch) {
-  definitions.fetch = require('node-fetch')
+  definitions.fetch = nodeFetch
 } else {
   definitions.fetch = global.fetch.bind()
 }

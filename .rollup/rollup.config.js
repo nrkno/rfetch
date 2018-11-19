@@ -23,7 +23,7 @@ export default [
         }
       }
     ],
-    external: ['abort-controller'],
+    external: ['abort-controller', 'node-fetch'],
     plugins: [
       replace({
         'process.browser': true

@@ -1,5 +1,5 @@
 {
-  "name": "rfetch",
+  "name": "@nrk/rfetch",
   "version": "1.0.0",
   "description": "rfetch - fetch with retry",
   "main": "lib/rfetch.js",
@@ -9,7 +9,7 @@
     "./rfetch/index.mjs": "lib/rfetch.web.mjs"
   },
   "repository": "github.com/nrkno/rfetch",
-  "license": "ISC",
+  "license": "MIT",
   "directories": {
     "lib": "lib"
   },

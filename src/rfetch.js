@@ -128,6 +128,8 @@ function retryFetchLoop (url, options, retryOptions, loopCtx) {
 
   definitions.retryFetchLoopIteration(url, options, retryOptions, loopCtx)
     .then(response => {
+      // TODO: race condition may happen see if we can reproduce this case (very unlikely)
+      // if (retryOptions.context.abortController.signal.aborted)
       defer(
         retryOptions.context.sink,
         'fetch.success',

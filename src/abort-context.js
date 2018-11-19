@@ -1,37 +1,37 @@
 import AbortController from 'abort-controller'
 
 /**
- * @typedef {Object} SignalTimeoutContext
+ * @typedef {Object} AbortContext
  * @property {AbortController.AbortSignal} signal - the abort signal
- * @property {number} signalTimeout - the signal timeout to wait before aborting
  * @property {boolean} abort - writable boolean value that indicates whether we should abort or not when the signal timeout has run out
  */
 
 /**
  * @param {AbortController} controller
- * @param {SignalTimeoutContext} context
+ * @param {AbortContext} context
+ * @param {number} timeout
  */
-function abort (controller, context) {
+function abort (controller, context, timeout) {
   setTimeout(
     () => context.abort ? controller.abort() : undefined,
-    context.signalTimeout
+    timeout
   )
 }
 
 /**
+ * Create an abort context
  *
- * @param {number} signalTimeout in ms
- * @returns
+ * @param {number} timeout in ms
+ * @returns {AbortContext}
  */
-function create (signalTimeout) {
+function create (timeout) {
   const controller = new AbortController()
   const context = {
     signal: controller.signal,
-    signalTimeout,
     abort: true
   }
 
-  setTimeout(definitions.abort, 1, controller, context)
+  setTimeout(definitions.abort, 1, controller, context, timeout)
   return context
 }
 

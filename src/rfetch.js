@@ -40,8 +40,8 @@ function retryFetchLoopIteration (url, options, retryOptions, loopCtx) {
 
   defer(
     retryOptions.context.sink,
-    'fetch.start',
-    { url, iteration: loopCtx.n, retries }
+    'rfetch.fetch.start',
+    { url, n: loopCtx.n + 1, retries }
   )
 
   return fetchImpl.fetch(url, options)
@@ -132,8 +132,8 @@ function retryFetchLoop (url, options, retryOptions, loopCtx) {
       // if (retryOptions.context.abortController.signal.aborted)
       defer(
         retryOptions.context.sink,
-        'fetch.success',
-        { url, iteration: loopCtx.n, retries: retryOptions.retries }
+        'rfetch.fetch.resolved',
+        { url, n: loopCtx.n + 1, retries: retryOptions.retries }
       )
 
       loopCtx.resolve(response)
@@ -142,8 +142,8 @@ function retryFetchLoop (url, options, retryOptions, loopCtx) {
       err => {
         defer(
           retryOptions.context.sink,
-          'fetch.failure',
-          { url, iteration: loopCtx.n, retries: retryOptions.retries, error: err }
+          'rfetch.fetch.rejected',
+          { url, n: loopCtx.n + 1, retries: retryOptions.retries, error: err }
         )
 
         retryOptions.context.errors.push(err)

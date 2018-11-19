@@ -195,12 +195,12 @@ describe('fetch with retry for node', () => {
     // abort the sequence after the 408 response
     let cancel = false
     const context = {
-      sink (eventType, ctx) {
-        if (eventType === 'fetch.failure' && ctx.error.toString().includes('<408>, not in')) {
+      sink (phase, ctx) {
+        if (phase === 'rfetch.fetch.rejected' && ctx.error.toString().includes('<408>, not in')) {
           cancel = true
         }
 
-        if (eventType === 'fetch.start' && cancel) {
+        if (phase === 'rfetch.fetch.start' && cancel) {
           cancel = false
           context.abortController.abort()
         }

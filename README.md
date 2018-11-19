@@ -1,6 +1,6 @@
-# README
+# RFetch
 
-RFetch - Fetch With Retry
+Fetch With Retry
 
 ## Installation
 
@@ -341,12 +341,3 @@ Bundlers such as [browserify](http://browserify.org/), [rollup](https://rollupjs
 
 A minified umd module for web, is provided under the `dist` folder, as `dist/rfetch.web.min.js` with a corresponding source map file.
 It exports `rfetch` on to the window
-
-## TODO:
-
-**Misc**
-- Add typings
-
-**Tests**
-- Automated tests for the dist/rfetch.web.js build via jest + puppeteer
-- Fix tests for module (mjs) builds (@see https://github.com/facebook/jest/issues/4637)

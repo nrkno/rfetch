@@ -7,7 +7,7 @@ RFetch - Fetch With Retry
 - Browser
 
 
-## Implementations
+## Usage
 
 TBD
 
@@ -26,7 +26,10 @@ TBD
 
 ## TODO:
 
-- Test dist build in browser automated via jest + puppeteer
-- Test mjs format also in node and browser
+**Misc**
 - Add typings
 - More complete informations about how to use, and available options
+
+**Tests**
+- Automated tests for the dist/rfetch.web.js build via jest + puppeteer
+- Fix tests for module (mjs) builds (@see https://github.com/facebook/jest/issues/4637)

@@ -218,25 +218,35 @@ describe('fetch with retry for node', () => {
     const path = '/vary-responses-503-408-cancel'
     const url = `${server.uri}${path}`
     const options = {}
+
+    // abort the sequence after the 408 response
+    let cancel = false
     const context = {
       sink (eventType, ctx) {
         if (eventType === 'fetch.failure' && ctx.error.toString().includes('<408>, not in')) {
+          cancel = true
+        }
+
+        if (eventType === 'fetch.start' && cancel) {
+          cancel = false
           context.abortController.abort()
         }
       }
     }
+
     const retryOptions = {
       context
     }
 
     const expectedErrors = [
       'RFetchError: Response.status: <503>, not in resolveOn: <[200]> status codes, attempt: <1> of: <3> retries, willRetry: <true>.',
-      'RFetchError: Response.status: <408>, not in resolveOn: <[200]> status codes, attempt: <2> of: <3> retries, willRetry: <true>.'
+      'RFetchError: Response.status: <408>, not in resolveOn: <[200]> status codes, attempt: <2> of: <3> retries, willRetry: <true>.',
+      'AbortError: Aborted'
     ]
 
     server.mockRequestPathResponses(
       path,
-      // teapot
+      // service unavailable
       () => {
         return {
           statusCode: 503,
@@ -246,7 +256,7 @@ describe('fetch with retry for node', () => {
           }
         }
       },
-      // service unavailable
+      // request timeout
       () => {
         return {
           statusCode: 408,
@@ -256,8 +266,9 @@ describe('fetch with retry for node', () => {
           }
         }
       },
-      // service unavailable
-      () => {
+      // teapot
+      async () => {
+        await delay(100)
         return {
           statusCode: 418,
           body: '',

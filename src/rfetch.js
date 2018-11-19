@@ -4,6 +4,7 @@ import AbortContext from './abort-context.js'
 import RetryOptions from './retry-options.js'
 import fetchImpl from './impl/fetch-impl.js'
 import includes from './util/includes.js'
+import defer from './util/defer.js'
 
 // noop sink callback
 const retrySinkNoop =
@@ -37,8 +38,10 @@ function retryFetchLoopIteration (url, options, retryOptions, loopCtx) {
 
   options.signal = loopCtx.abortContext.controller.signal
 
-  retryOptions.context.sink(
-    'fetch.start', { url, iteration: loopCtx.n, retries }
+  defer(
+    retryOptions.context.sink,
+    'fetch.start',
+    { url, iteration: loopCtx.n, retries }
   )
 
   return fetchImpl.fetch(url, options)
@@ -92,18 +95,14 @@ function retryFetchLoopIteration (url, options, retryOptions, loopCtx) {
 }
 
 /**
- *
- * @param {String} url
- * @param {Object} options
- * @param {RetryOptions} retryOptions
- * @param {Object} promise
- * @param {number} n
+ * @param {number}
+ * @param {...args} - same arguments as the retryFetchLoop expects
  */
-function retryFetchLoopDefer (timeout, url, options, retryOptions, promise, n) {
+function retryFetchLoopSchedule (timeout, ...args) {
   setTimeout(
     definitions.retryFetchLoop,
     timeout,
-    url, options, retryOptions, promise, n
+    ...args
   )
 }
 
@@ -129,16 +128,20 @@ function retryFetchLoop (url, options, retryOptions, loopCtx) {
 
   definitions.retryFetchLoopIteration(url, options, retryOptions, loopCtx)
     .then(response => {
-      retryOptions.context.sink(
-        'fetch.success', { url, iteration: loopCtx.n, retries: retryOptions.retries }
+      defer(
+        retryOptions.context.sink,
+        'fetch.success',
+        { url, iteration: loopCtx.n, retries: retryOptions.retries }
       )
 
       loopCtx.resolve(response)
     })
     .catch(
       err => {
-        retryOptions.context.sink(
-          'fetch.failure', { url, iteration: loopCtx.n, retries: retryOptions.retries, error: err }
+        defer(
+          retryOptions.context.sink,
+          'fetch.failure',
+          { url, iteration: loopCtx.n, retries: retryOptions.retries, error: err }
         )
 
         retryOptions.context.errors.push(err)
@@ -157,8 +160,10 @@ function retryFetchLoop (url, options, retryOptions, loopCtx) {
           loopCtx.timeoutIndex = loopCtx.timeoutIndex + 1
         }
 
-        definitions.retryFetchLoopDefer(
-          retryOptions.retryTimeout[loopCtx.timeoutIndex], url, options, retryOptions, loopCtx
+        // schedule next loop run
+        definitions.retryFetchLoopSchedule(
+          retryOptions.retryTimeout[loopCtx.timeoutIndex],
+          url, options, retryOptions, loopCtx
         )
       }
     )
@@ -192,7 +197,7 @@ function rfetch (url, options = null, retryOptions = null) {
 const definitions = {
   retrySinkNoop,
   retryFetchLoop,
-  retryFetchLoopDefer,
+  retryFetchLoopSchedule,
   retryFetchLoopIteration
 }
 

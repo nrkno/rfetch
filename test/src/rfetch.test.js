@@ -7,21 +7,22 @@ import nock from 'nock'
 import AbortContext from '../../src/abort-context.js'
 import fetchImpl from '../../src/impl/fetch-impl.js'
 import { definitions as rfetchDefinitions, rfetch } from '../../src/rfetch.js'
+import delay from '../common/delay.js'
 
 describe('rfetch', () => {
   let fetchSpy
   let abortSpy
-  let deferSpy
+  let scheduleSpy
 
   beforeEach(() => {
     abortSpy = jest.spyOn(AbortContext, 'create')
-    deferSpy = jest.spyOn(rfetchDefinitions, 'retryFetchLoopDefer')
+    scheduleSpy = jest.spyOn(rfetchDefinitions, 'retryFetchLoopSchedule')
     fetchSpy = jest.spyOn(fetchImpl.definitions, 'fetch')
   })
 
   afterEach(() => {
     abortSpy.mockRestore()
-    deferSpy.mockRestore()
+    scheduleSpy.mockRestore()
     fetchSpy.mockRestore()
   })
 
@@ -67,10 +68,10 @@ describe('rfetch', () => {
       expect(resultErrors).toEqual(expectedErrors)
       expect(fetchSpy).toBeCalledTimes(expectedRetries)
 
-      expect(deferSpy.mock.calls[0][0]).toBe(100)
-      expect(deferSpy.mock.calls[1][0]).toBe(200)
-      expect(deferSpy.mock.calls[2][0]).toBe(100)
-      expect(deferSpy.mock.calls[3][0]).toBe(200)
+      expect(scheduleSpy.mock.calls[0][0]).toBe(100)
+      expect(scheduleSpy.mock.calls[1][0]).toBe(200)
+      expect(scheduleSpy.mock.calls[2][0]).toBe(100)
+      expect(scheduleSpy.mock.calls[3][0]).toBe(200)
 
       expect(abortSpy.mock.calls[0][0]).toBe(signalTimeout)
       expect(abortSpy.mock.calls[1][0]).toBe(signalTimeout)
@@ -126,8 +127,8 @@ describe('rfetch', () => {
       expect(resultErrors).toEqual(expectedErrors)
 
       expect(fetchSpy).toBeCalledTimes(expectedRetries)
-      expect(deferSpy.mock.calls[0][0]).toBe(100)
-      expect(deferSpy.mock.calls[1][0]).toBe(100)
+      expect(scheduleSpy.mock.calls[0][0]).toBe(100)
+      expect(scheduleSpy.mock.calls[1][0]).toBe(100)
 
       expect(abortSpy.mock.calls[0][0]).toBe(signalTimeout)
       expect(abortSpy.mock.calls[1][0]).toBe(signalTimeout)
@@ -184,9 +185,9 @@ describe('rfetch', () => {
 
     expect(fetchSpy).toBeCalledTimes(expectedRetries)
 
-    expect(deferSpy.mock.calls[0][0]).toBe(100)
-    expect(deferSpy.mock.calls[1][0]).toBe(250)
-    expect(deferSpy.mock.calls[2][0]).toBe(300)
+    expect(scheduleSpy.mock.calls[0][0]).toBe(100)
+    expect(scheduleSpy.mock.calls[1][0]).toBe(250)
+    expect(scheduleSpy.mock.calls[2][0]).toBe(300)
 
     expect(abortSpy.mock.calls[0][0]).toBe(signalTimeout)
     expect(abortSpy.mock.calls[1][0]).toBe(signalTimeout)
@@ -235,7 +236,7 @@ describe('rfetch', () => {
 
     expect(fetchSpy).toBeCalledTimes(expectedRetries)
 
-    expect(deferSpy.mock.calls[0][0]).toBe(retryTimeout)
+    expect(scheduleSpy.mock.calls[0][0]).toBe(retryTimeout)
 
     expect(abortSpy.mock.calls[0][0]).toBe(signalTimeout)
     expect(abortSpy.mock.calls[1][0]).toBe(signalTimeout)
@@ -247,9 +248,17 @@ describe('rfetch', () => {
     const path = '/vary-responses-503-408-cancel'
     const url = `http://localhost${path}`
     const options = {}
+
+    // abort the sequence after the 408 response
+    let cancel = false
     const context = {
       sink (eventType, ctx) {
         if (eventType === 'fetch.failure' && ctx.error.toString().includes('<408>, not in')) {
+          cancel = true
+        }
+
+        if (eventType === 'fetch.start' && cancel) {
+          cancel = false
           context.abortController.abort()
         }
       }
@@ -258,24 +267,32 @@ describe('rfetch', () => {
       context
     }
 
-    const expectedRetries = 2
+    const expectedRetries = 3
     const expectedErrors = [
       'RFetchError: Response.status: <503>, not in resolveOn: <[200]> status codes, attempt: <1> of: <3> retries, willRetry: <true>.',
-      'RFetchError: Response.status: <408>, not in resolveOn: <[200]> status codes, attempt: <2> of: <3> retries, willRetry: <true>.'
+      'RFetchError: Response.status: <408>, not in resolveOn: <[200]> status codes, attempt: <2> of: <3> retries, willRetry: <true>.',
+      'AbortError: The user aborted a request.'
     ]
 
     // Mock http calls
     const responses = [
-      [503, ''], // request timeout
-      [408, ''], //
-      [418, ''], // teapot
-      [200, ''] // ok
+      // service unavailable
+      (uri, rb, cb) => cb(null, [503, '']),
+      // request timeout
+      (uri, rb, cb) => cb(null, [408, '']),
+      // teapot
+      async (uri, rb, cb) => {
+        await delay(100)
+        return cb(null, [418, ''])
+      },
+      // ok
+      (uri, rb, cb) => cb(null, [200, ''])
     ]
 
     for (const response of responses) {
       nock('http://localhost')
         .get(path)
-        .reply(() => response)
+        .reply(response)
     }
 
     // Act

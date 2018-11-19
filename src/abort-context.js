@@ -1,4 +1,5 @@
 import AbortControllerIpml from './impl/abort-controller-impl'
+import defer from './util/defer'
 
 /**
  * @typedef {Object} AbortContext
@@ -28,7 +29,7 @@ function create (timeout) {
   context.controller = new AbortControllerIpml()
   context.abort = true
 
-  setTimeout(definitions.abort, 1, context, timeout)
+  defer(definitions.abort, context, timeout)
   return context
 }
 

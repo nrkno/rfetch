@@ -2,13 +2,27 @@ import parseInteger from './util/parse-integer.js'
 import parseIntegerArray from './util/parse-integer-array.js'
 
 /**
+ * @typedef {Object} RetryOptionsContext
+ * @property {AbortController} [context.abortController=null] - the global abortController associated with the retry fetch loop
+ * @property {Error[]} [context.errors=null] - the global abortController associated with the retry fetch loop
+ * @property {function} [context.sink=null] - a sink function for different events
+ */
+
+/** @type {RetryOptionsContext} */
+const defaultRetryOptionsContext = {
+  abortController: null,
+  errors: [],
+  sink: null
+}
+
+/**
  * @typedef {Object} RetryOptions
  * @property {number} [signalTimeout=1000] - The signal timeout before aborting the request in ms.
  * @property {(number|number[])} [resolveOn=[200]] - The status code(s) to resolve on
  * @property {number} [retries=3] - The number of the times to retry
  * @property {(number|number[])} [retryTimeout=[100]] - The retry timeout
  * @property {(number|number[])} retryOn - The status code(s) to retry on
- * @property {Error[]} errors - An array where to put the fetch errors in
+ * @property {RetryOptionsContext} context - The object context where to set the
  */
 
 /** @type {RetryOptions} */
@@ -18,10 +32,38 @@ const defaultRetryOptions = {
   retries: 3,
   retryTimeout: [ 100 ],
   retryOn: [],
-  errors: []
+  context: parseContext({})
 }
 
 /**
+ * @param {Object} context
+ * @returns {RetryOptionsContext}
+ */
+function parseContext (context) {
+  if (!context) {
+    return Object.assign({}, defaultRetryOptionsContext)
+  }
+
+  const parsedContext = context || {}
+
+  // set abortController ref
+  parsedContext.abortController = null
+
+  // will put received fetch errors in this array
+  parsedContext.errors = Array.isArray(context.errors)
+    ? context.errors
+    : []
+
+  // set sink ref
+  parsedContext.sink = context.sink
+    ? context.sink
+    : null
+
+  return parsedContext
+}
+
+/**
+ * @param {Object} options
  * @returns {RetryOptions}
  */
 function parse (options = {}) {
@@ -41,15 +83,14 @@ function parse (options = {}) {
       parseIntegerArray(options[key]) || defaultRetryOptions[key]
   }
 
-  // will put received fetch errors in this array
-  parsedOptions.errors = Array.isArray(options.errors)
-    ? options.errors
-    : []
+  parsedOptions.context =
+    parseContext(options.context)
 
   return parsedOptions
 }
 
 export default {
   defaultRetryOptions,
+  parseContext,
   parse
 }

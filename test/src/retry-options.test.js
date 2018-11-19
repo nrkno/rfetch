@@ -10,8 +10,19 @@ describe('retryOptions', () => {
       retries: 3,
       retryTimeout: [ 100 ],
       retryOn: [],
-      errors: []
+      context: {
+        abortController: null,
+        errors: [],
+        sink: null
+      }
     }
+
+    const myErrors = [
+      new Error('test')
+    ]
+
+    const mySink =
+      _ => _
 
     const values = [
       // not defined values
@@ -22,7 +33,7 @@ describe('retryOptions', () => {
 
       // defined values
       { signalTimeout: 600, resolveOn: 204, retries: 2, retryTimeout: 200, retryOn: 404 },
-      { signalTimeout: 1200, resolveOn: [200, 201, 304], retries: 5, retryTimeout: [ 100, 300, 500 ], retryOn: [408, 418, 429] }
+      { signalTimeout: 1200, resolveOn: [200, 201, 304], retries: 5, retryTimeout: [100, 300, 500], retryOn: [408, 418, 429], context: { errors: myErrors, sink: mySink } }
     ]
 
     const expectedValues = [
@@ -33,8 +44,8 @@ describe('retryOptions', () => {
       defaultOptions,
 
       // defined options set
-      { signalTimeout: 600, resolveOn: [ 204 ], retries: 2, retryTimeout: [ 200 ], retryOn: [ 404 ], errors: [] },
-      { signalTimeout: 1200, resolveOn: [200, 201, 304], retries: 5, retryTimeout: [ 100, 300, 500 ], retryOn: [408, 418, 429], errors: [] }
+      { signalTimeout: 600, resolveOn: [204], retries: 2, retryTimeout: [200], retryOn: [404], context: { abortController: null, errors: [], sink: null } },
+      { signalTimeout: 1200, resolveOn: [200, 201, 304], retries: 5, retryTimeout: [100, 300, 500], retryOn: [408, 418, 429], context: { abortController: null, errors: myErrors, sink: mySink } }
     ]
 
     // Act

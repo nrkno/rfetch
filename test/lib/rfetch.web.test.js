@@ -41,14 +41,17 @@ describe('fetch with retry for node', () => {
     const path = '/vary-responses-signal-408-signal-503-signal'
     const url = `${server.uri}${path}`
     const options = {}
-    const errors = []
+    const context = {
+      errors: []
+    }
+
     const retryOptions = {
       resolveOn: 200,
       retries: 5,
       signalTimeout: 100,
       retryTimeout: 100,
       retryOn: [503, 408],
-      errors
+      context
     }
 
     const expectedErrors = [
@@ -122,7 +125,7 @@ describe('fetch with retry for node', () => {
       await rfetch(url, options, retryOptions)
     } catch (e) {
       // Assert
-      const resultErrors = errors.map(err => err.toString())
+      const resultErrors = context.errors.map(err => err.toString())
       expect(resultErrors).toEqual(expectedErrors)
       done()
     }
@@ -133,14 +136,14 @@ describe('fetch with retry for node', () => {
     const path = '/vary-responses-418-503-signal-200'
     const url = `${server.uri}${path}`
     const options = {}
-    const errors = []
+    const context = {}
     const retryOptions = {
       resolveOn: 200,
       retries: 5,
       signalTimeout: 100,
       retryTimeout: 100,
       retryOn: [418, 408, 503],
-      errors
+      context
     }
 
     const expectedStatusCode = 200
@@ -205,9 +208,87 @@ describe('fetch with retry for node', () => {
     expect(text).toEqual(expectedText)
     expect(response.status).toEqual(expectedStatusCode)
 
-    const resultErrors = errors.map(err => err.toString())
+    const resultErrors = context.errors.map(err => err.toString())
     expect(resultErrors).toEqual(expectedErrors)
 
     done()
+  })
+
+  test('Should fail after uses cancels via context.abortController sequence [503, 408, cancel] ', async (done) => {
+    // Arrange
+    const path = '/vary-responses-503-408-cancel'
+    const url = `${server.uri}${path}`
+    const options = {}
+    const context = {
+      sink (eventType, ctx) {
+        if (eventType === 'fetch.failure' && ctx.error.toString().includes('<408>, not in')) {
+          context.abortController.abort()
+        }
+      }
+    }
+    const retryOptions = {
+      context
+    }
+
+    const expectedErrors = [
+      'RFetchError: Response.status: <503>, not in resolveOn: <[200]> status codes, attempt: <1> of: <3> retries, willRetry: <true>.',
+      'RFetchError: Response.status: <408>, not in resolveOn: <[200]> status codes, attempt: <2> of: <3> retries, willRetry: <true>.'
+    ]
+
+    server.mockRequestPathResponses(
+      path,
+      // teapot
+      () => {
+        return {
+          statusCode: 503,
+          body: '',
+          headers: {
+            'Access-Control-Allow-Origin': '*'
+          }
+        }
+      },
+      // service unavailable
+      () => {
+        return {
+          statusCode: 408,
+          body: '',
+          headers: {
+            'Access-Control-Allow-Origin': '*'
+          }
+        }
+      },
+      // service unavailable
+      () => {
+        return {
+          statusCode: 418,
+          body: '',
+          headers: {
+            'Access-Control-Allow-Origin': '*'
+          }
+        }
+      },
+      // ok
+      async () => {
+        return {
+          statusCode: 200,
+          body: 'OK',
+          headers: {
+            'Access-Control-Allow-Origin': '*'
+          }
+        }
+      }
+    )
+
+    // Act
+    try {
+      await rfetch(url, options, retryOptions)
+    } catch (error) {
+      // Assert
+      const resultErrors =
+        context.errors.map(err => err.toString())
+
+      expect(resultErrors).toEqual(expectedErrors)
+      done()
+    }
   })
 })

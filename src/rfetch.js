@@ -1,11 +1,17 @@
 import RFetchError from './rfetch-error.js'
+import AbortController from './impl/abort-controller-impl'
 import AbortContext from './abort-context.js'
 import RetryOptions from './retry-options.js'
 import fetchImpl from './impl/fetch-impl.js'
 import includes from './util/includes.js'
 
+// noop sink callback
+const retrySinkNoop =
+  _ => _
+
 /**
  * @typedef {Object} RetryFetchLoopCtx
+ * @param {AbortContext} abortContext
  * @param {number} n
  * @param {number} timeoutIndex
  * @param {function} resolve
@@ -16,9 +22,9 @@ import includes from './util/includes.js'
  * @param {String} url
  * @param {Object} options
  * @param {RetryOptions} retryOptions
- * @param {RetryFetchLoopCtx} ctx
+ * @param {RetryFetchLoopCtx} loopCtx
  */
-function retryFetchLoopIteration (url, options, retryOptions, ctx) {
+function retryFetchLoopIteration (url, options, retryOptions, loopCtx) {
   const {
     signalTimeout,
     resolveOn,
@@ -26,10 +32,14 @@ function retryFetchLoopIteration (url, options, retryOptions, ctx) {
     retryOn
   } = retryOptions
 
-  const abortContext =
+  loopCtx.abortContext =
     AbortContext.create(signalTimeout, url)
 
-  options.signal = abortContext.signal
+  options.signal = loopCtx.abortContext.controller.signal
+
+  retryOptions.context.sink(
+    'fetch.start', { url, iteration: loopCtx.n, retries }
+  )
 
   return fetchImpl.fetch(url, options)
     .then(response => {
@@ -44,7 +54,7 @@ function retryFetchLoopIteration (url, options, retryOptions, ctx) {
       */
 
       /* 1 */
-      abortContext.abort = false
+      loopCtx.abortContext.abort = false
 
       /* 2 */
       if (includes(resolveOn, response.status)) {
@@ -56,10 +66,10 @@ function retryFetchLoopIteration (url, options, retryOptions, ctx) {
         const message =
           `Response.status: <${response.status}>, ` +
           `not in retryOn: <[${retryOn.join(', ')}]> status codes, ` +
-          `attempt: <${ctx.n + 1}> of: <${retries}> retries, willRetry: <false>.`
+          `attempt: <${loopCtx.n + 1}> of: <${retries}> retries, willRetry: <false>.`
 
         // increment n so that we don't retry
-        ctx.n = retries - 1
+        loopCtx.n = retries - 1
         throw new RFetchError(message)
       }
 
@@ -68,7 +78,7 @@ function retryFetchLoopIteration (url, options, retryOptions, ctx) {
         throw new RFetchError(
           `Response.status: <${response.status}>, ` +
           `is in retryOn: <[${retryOn.join(', ')}]> status codes, ` +
-          `attempt: <${ctx.n + 1}> of: <${retries}> retries, willRetry: <${String(ctx.n + 1 < retries)}>.`
+          `attempt: <${loopCtx.n + 1}> of: <${retries}> retries, willRetry: <${String(loopCtx.n + 1 < retries)}>.`
         )
       }
 
@@ -76,7 +86,7 @@ function retryFetchLoopIteration (url, options, retryOptions, ctx) {
       throw new RFetchError(
         `Response.status: <${response.status}>, ` +
         `not in resolveOn: <[${resolveOn.join(', ')}]> status codes, ` +
-        `attempt: <${ctx.n + 1}> of: <${retries}> retries, willRetry: <${String(ctx.n + 1 < retries)}>.`
+        `attempt: <${loopCtx.n + 1}> of: <${retries}> retries, willRetry: <${String(loopCtx.n + 1 < retries)}>.`
       )
     })
 }
@@ -102,31 +112,53 @@ function retryFetchLoopDefer (timeout, url, options, retryOptions, promise, n) {
  * @param {String} url
  * @param {Object} options
  * @param {RetryOptions} retryOptions
- * @param {RetryFetchLoopCtx} ctx
+ * @param {RetryFetchLoopCtx} loopCtx
  */
-function retryFetchLoop (url, options, retryOptions, ctx) {
-  definitions.retryFetchLoopIteration(url, options, retryOptions, ctx)
-    .then(ctx.resolve)
+function retryFetchLoop (url, options, retryOptions, loopCtx) {
+  retryOptions.context.abortController = new AbortController()
+  if (!retryOptions.context.sink) {
+    retryOptions.context.sink = definitions.retrySinkNoop
+  }
+
+  // user signals global abort
+  retryOptions.context.abortController.signal
+    .addEventListener(
+      'abort',
+      () => loopCtx.abortContext ? loopCtx.abortContext.controller.abort() : undefined
+    )
+
+  definitions.retryFetchLoopIteration(url, options, retryOptions, loopCtx)
+    .then(response => {
+      retryOptions.context.sink(
+        'fetch.success', { url, iteration: loopCtx.n, retries: retryOptions.retries }
+      )
+
+      loopCtx.resolve(response)
+    })
     .catch(
       err => {
-        retryOptions.errors.push(err)
-        if (ctx.n + 1 === retryOptions.retries) {
-          ctx.reject(err)
+        retryOptions.context.sink(
+          'fetch.failure', { url, iteration: loopCtx.n, retries: retryOptions.retries, error: err }
+        )
+
+        retryOptions.context.errors.push(err)
+        if (loopCtx.n + 1 === retryOptions.retries || retryOptions.context.abortController.signal.aborted) {
+          loopCtx.reject(err)
           return
         }
 
         // augment next loop iteration
-        ctx.n = ctx.n + 1
+        loopCtx.n = loopCtx.n + 1
 
         // set next timeoutIndex
-        if (ctx.timeoutIndex + 1 >= retryOptions.retryTimeout.length) {
-          ctx.timeoutIndex = 0
-        } else if (ctx.n > 1) {
-          ctx.timeoutIndex = ctx.timeoutIndex + 1
+        if (loopCtx.timeoutIndex + 1 >= retryOptions.retryTimeout.length) {
+          loopCtx.timeoutIndex = 0
+        } else if (loopCtx.n > 1) {
+          loopCtx.timeoutIndex = loopCtx.timeoutIndex + 1
         }
 
         definitions.retryFetchLoopDefer(
-          retryOptions.retryTimeout[ctx.timeoutIndex], url, options, retryOptions, ctx
+          retryOptions.retryTimeout[loopCtx.timeoutIndex], url, options, retryOptions, loopCtx
         )
       }
     )
@@ -147,6 +179,7 @@ function rfetch (url, options = null, retryOptions = null) {
       options || {},
       RetryOptions.parse(retryOptions),
       {
+        abortContext: null,
         n: 0,
         timeoutIndex: 0,
         resolve,
@@ -157,6 +190,7 @@ function rfetch (url, options = null, retryOptions = null) {
 }
 
 const definitions = {
+  retrySinkNoop,
   retryFetchLoop,
   retryFetchLoopDefer,
   retryFetchLoopIteration

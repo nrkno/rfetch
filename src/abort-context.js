@@ -2,18 +2,17 @@ import AbortControllerIpml from './impl/abort-controller-impl'
 
 /**
  * @typedef {Object} AbortContext
- * @property {AbortController.AbortSignal} signal - the abort signal
+ * @property {AbortController} controller - the abort controller
  * @property {boolean} abort - writable boolean value that indicates whether we should abort or not when the signal timeout has run out
  */
 
 /**
- * @param {AbortController} controller
  * @param {AbortContext} context
  * @param {number} timeout
  */
-function abort (controller, context, timeout) {
+function abort (context, timeout) {
   setTimeout(
-    () => context.abort ? controller.abort() : undefined,
+    () => context.abort ? context.controller.abort() : undefined,
     timeout
   )
 }
@@ -25,13 +24,11 @@ function abort (controller, context, timeout) {
  * @returns {AbortContext}
  */
 function create (timeout) {
-  const controller = new AbortControllerIpml()
-  const context = {
-    signal: controller.signal,
-    abort: true
-  }
+  const context = {}
+  context.controller = new AbortControllerIpml()
+  context.abort = true
 
-  setTimeout(definitions.abort, 1, controller, context, timeout)
+  setTimeout(definitions.abort, 1, context, timeout)
   return context
 }
 

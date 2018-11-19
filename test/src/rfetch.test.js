@@ -29,13 +29,15 @@ describe('rfetch', () => {
     // Arrange
     const url = `http://localhost/unavailable`
     const options = {}
-    const errors = []
+    const context = {
+      errors: []
+    }
     const signalTimeout = 1000
     const retryOptions = {
       signalTimeout,
       retries: 5,
       retryTimeout: [ 100, 200 ], // should loop over these
-      errors
+      context
     }
 
     const expectedRetries = 5
@@ -60,7 +62,7 @@ describe('rfetch', () => {
     } catch (e) {
     // Assert
       const resultErrors =
-        errors.map(err => err.toString())
+        context.errors.map(err => err.toString())
 
       expect(resultErrors).toEqual(expectedErrors)
       expect(fetchSpy).toBeCalledTimes(expectedRetries)
@@ -82,12 +84,15 @@ describe('rfetch', () => {
   test('Should fail after 3 varying http error, two are in the retryStatusCodes while the last is not', async (done) => {
     const url = `http://localhost/vary-error-responses-503-408-400`
     const options = {}
-    const errors = []
+    const context = {
+      errors: []
+    }
+
     const signalTimeout = 1000
     const retryOptions = {
       retries: 5,
       retryOn: [ 503, 408 ],
-      errors
+      context
     }
 
     // Mock http calls
@@ -116,7 +121,7 @@ describe('rfetch', () => {
     } catch (e) {
     // Assert
       const resultErrors =
-        errors.map(err => err.toString())
+        context.errors.map(err => err.toString())
 
       expect(resultErrors).toEqual(expectedErrors)
 
@@ -136,13 +141,14 @@ describe('rfetch', () => {
     const path = '/vary-responses-503-408-418-200'
     const url = `http://localhost${path}`
     const options = {}
-    const errors = []
+    const context = {}
+
     const signalTimeout = 500
     const retryOptions = {
       signalTimeout: 500,
       retries: 5,
       retryTimeout: [100, 250, 300],
-      errors
+      context
     }
 
     const expectedRetries = 4
@@ -170,7 +176,7 @@ describe('rfetch', () => {
     // Act
     const response = await rfetch(url, options, retryOptions)
     const resultErrors =
-      errors.map(err => err.toString())
+      context.errors.map(err => err.toString())
 
     // Assert
     expect(resultErrors).toEqual(expectedErrors)
@@ -193,7 +199,7 @@ describe('rfetch', () => {
     const path = '/vary-responses-408-304-418'
     const url = `http://localhost${path}`
     const options = {}
-    const errors = []
+    const context = {}
     const signalTimeout = 250
     const retryTimeout = 125
     const retryOptions = {
@@ -201,7 +207,7 @@ describe('rfetch', () => {
       retryTimeout,
       resolveOn: 304,
       retries: 5,
-      errors
+      context
     }
 
     const expectedRetries = 2
@@ -224,7 +230,7 @@ describe('rfetch', () => {
     // Act
     const response = await rfetch(url, options, retryOptions)
     // Assert
-    expect(errors[0].toString()).toEqual(expectedError)
+    expect(context.errors[0].toString()).toEqual(expectedError)
     expect(response.status).toEqual(expectedStatusCode)
 
     expect(fetchSpy).toBeCalledTimes(expectedRetries)
@@ -234,5 +240,56 @@ describe('rfetch', () => {
     expect(abortSpy.mock.calls[0][0]).toBe(signalTimeout)
     expect(abortSpy.mock.calls[1][0]).toBe(signalTimeout)
     done()
+  })
+
+  test('Should fail after uses cancels via context.abortController sequence [503, 408, cancel] ', async (done) => {
+    // Arrange
+    const path = '/vary-responses-503-408-cancel'
+    const url = `http://localhost${path}`
+    const options = {}
+    const context = {
+      sink (eventType, ctx) {
+        if (eventType === 'fetch.failure' && ctx.error.toString().includes('<408>, not in')) {
+          context.abortController.abort()
+        }
+      }
+    }
+    const retryOptions = {
+      context
+    }
+
+    const expectedRetries = 2
+    const expectedErrors = [
+      'RFetchError: Response.status: <503>, not in resolveOn: <[200]> status codes, attempt: <1> of: <3> retries, willRetry: <true>.',
+      'RFetchError: Response.status: <408>, not in resolveOn: <[200]> status codes, attempt: <2> of: <3> retries, willRetry: <true>.'
+    ]
+
+    // Mock http calls
+    const responses = [
+      [503, ''], // request timeout
+      [408, ''], //
+      [418, ''], // teapot
+      [200, ''] // ok
+    ]
+
+    for (const response of responses) {
+      nock('http://localhost')
+        .get(path)
+        .reply(() => response)
+    }
+
+    // Act
+    try {
+      await rfetch(url, options, retryOptions)
+    } catch (error) {
+      // Assert
+      console.log('error', error)
+      const resultErrors =
+        context.errors.map(err => err.toString())
+
+      expect(resultErrors).toEqual(expectedErrors)
+      expect(fetchSpy).toBeCalledTimes(expectedRetries)
+      done()
+    }
   })
 })

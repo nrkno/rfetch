@@ -2,34 +2,34 @@
 import AbortContext from '../../src/abort-context.js'
 
 describe('AbortContext', () => {
-  let signalSpy
+  let abortSpy
   let timeoutSpy
   beforeEach(() => {
-    signalSpy = jest.spyOn(AbortContext.definitions, 'abort')
+    abortSpy = jest.spyOn(AbortContext.definitions, 'abort')
     timeoutSpy = jest.spyOn(global, 'setTimeout')
   })
   afterEach(() => {
-    signalSpy.mockRestore()
+    abortSpy.mockRestore()
     timeoutSpy.mockRestore()
   })
 
   test('Should dispatch event abort when signal signalTimeout has run out', (done) => {
     // Arrange
-    const signalTimeout = 10
-    const ctx = AbortContext.create(signalTimeout)
+    const timeout = 10
+    const context = AbortContext.create(timeout)
 
     // Act
-    ctx.signal.addEventListener('abort', () => {
+    context.controller.signal.addEventListener('abort', () => {
       // Assert
-      expect(ctx.signal.aborted).toBe(true)
-      expect(signalSpy).toHaveBeenCalledTimes(1)
-      expect(signalSpy.mock.calls[0][1]).toBe(ctx)
-      expect(signalSpy.mock.calls[0][2]).toBe(signalTimeout)
+      expect(context.controller.signal.aborted).toBe(true)
+      expect(abortSpy).toHaveBeenCalledTimes(1)
+      expect(abortSpy.mock.calls[0][0]).toBe(context)
+      expect(abortSpy.mock.calls[0][1]).toBe(timeout)
 
       // defered call
       expect(timeoutSpy.mock.calls[0][1]).toBe(1)
       // setTimeout in abort call
-      expect(timeoutSpy.mock.calls[1][1]).toBe(signalTimeout)
+      expect(timeoutSpy.mock.calls[1][1]).toBe(timeout)
       done()
     })
   })
@@ -37,15 +37,15 @@ describe('AbortContext', () => {
   test('Should not dispatch event abort when signal signalTimeout has run out', (done) => {
     // Arrange
     const signalTimeout = 20
-    const ctx = AbortContext.create(signalTimeout)
+    const context = AbortContext.create(signalTimeout)
 
     // Act + Assert
-    ctx.abort = false
+    context.abort = false
     setTimeout(() => {
-      expect(ctx.signal.aborted).toBe(false)
-      expect(signalSpy).toHaveBeenCalledTimes(1)
-      expect(signalSpy.mock.calls[0][1]).toBe(ctx)
-      expect(signalSpy.mock.calls[0][2]).toBe(signalTimeout)
+      expect(context.controller.signal.aborted).toBe(false)
+      expect(abortSpy).toHaveBeenCalledTimes(1)
+      expect(abortSpy.mock.calls[0][0]).toBe(context)
+      expect(abortSpy.mock.calls[0][1]).toBe(signalTimeout)
 
       done()
     }, 10)

@@ -1,7 +1,7 @@
 {
-  "name": "fetch-with-retry",
+  "name": "rfetch",
   "version": "1.0.0",
-  "description": "",
+  "description": "rfetch - fetch with retry",
   "main": "lib/index.js",
   "module": "lib/index.mjs",
   "browser": "dist/rfetch.min.js",

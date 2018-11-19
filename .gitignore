@@ -14,5 +14,8 @@ yarn-error.log*
 # Dependency directories
 /node_modules
 
+# test archives build via npm pack
+/*.tgz
+
 # dotenv environment variables file
 .env

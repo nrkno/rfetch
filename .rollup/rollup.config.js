@@ -13,7 +13,7 @@ export default [
     input: '.rollup/dist-export.js',
     output: [
       {
-        file: 'dist/fetch-with-retry.min.js',
+        file: 'dist/rfetch.min.js',
         format: 'umd',
         exports: 'default',
         name: 'fetchWithRetry',

@@ -1,6 +1,6 @@
 # README
 
-Fetch With Retry
+RFetch - Fetch With Retry
 
 - Node
 - ES6 environments
@@ -17,7 +17,6 @@ TBD
 *Browser*
 
 * [whatwg-fetch](https://www.npmjs.com/package/whatwg-fetch) (included by [isomorphic-fetch](https://www.npmjs.com/package/isomorphic-fetch))
-* [es6-promise](https://www.npmjs.com/package/es6-promise)
 * [abort-controller](https://www.npmjs.com/package/abort-controller)
 
 *Node*
@@ -27,7 +26,6 @@ TBD
 
 ## TODO:
 
-- Add check on missing AbortController, fetch, Promise for browser dist build
-- Test dist build
+- Test dist build in browser automated via jest + puppeteer
 - Add typings
 - More complete informations about how to use, and available options

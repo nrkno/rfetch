@@ -4,8 +4,8 @@
   "description": "",
   "main": "lib/index.js",
   "module": "lib/index.mjs",
-  "browser": "dist/fetch-with-retry.min.js",
-  "repository": "github.com/nrkno/fetch-with-retry",
+  "browser": "dist/rfetch.min.js",
+  "repository": "github.com/nrkno/rfetch",
   "license": "ISC",
   "directories": {
     "lib": "lib"

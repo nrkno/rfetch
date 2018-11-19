@@ -1,8 +1,7 @@
 /* global window, fetch */
 import env from './util/env.js'
 
-const functions = {}
-functions.fetchImpl = null
+const definitions = {}
 
 /*
   Selection of fetch implementation heuristics:
@@ -12,22 +11,21 @@ functions.fetchImpl = null
   3. finally fallback to the global.fetch pollyfill
 */
 if (env.browser) {
-  functions.fetchImpl = fetch.bind()
+  definitions.fetch = fetch.bind()
 } else if (env.process && !global.fetch) {
-  functions.fetchImpl = require('node-fetch')
+  definitions.fetch = require('node-fetch')
 } else {
-  functions.fetchImpl = global.fetch.bind()
-}
-
-/**
- * @param {String} url
- * @param {Object} options
- */
-function fetchProxy (url, options) {
-  return functions.fetchImpl(url, options)
+  definitions.fetch = global.fetch.bind()
 }
 
 export default {
-  functions,
-  fetch: fetchProxy
+  definitions,
+
+  /**
+   * @param {String} url
+   * @param {Object} options
+   */
+  fetch (url, options) {
+    return definitions.fetch(url, options)
+  }
 }

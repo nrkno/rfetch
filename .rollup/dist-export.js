@@ -11,4 +11,4 @@ if (!(typeof AbortController !== 'undefined' ? AbortController : null)) {
   throw new Error('No AbortController implementation available please ensure a polyfill available')
 }
 
-export { default } from '../src/fetch-with-retry.js'
+export { default } from '../src/rfetch.js'

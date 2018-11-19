@@ -1,17 +1,18 @@
-/* global beforeAll, afterAll, afterEach, describe, expect, jest, test */
+/* global beforeAll, afterAll, afterEach, describe, expect, test */
 /**
  * @jest-environment jsdom
  */
-import './window.polyfill.js'
-import psleep from '../../src/util/psleep.js'
+import '../common/window.polyfill.js'
+import delay from '../common/delay.js'
 import server from '../common/server.js'
-import fetchWithRetry from '../../lib/index.js'
+import rfetch from '../../lib/index.js'
 
 describe('fetch with retry for node', () => {
   beforeAll(async () => {
     try {
       await server.start(30004)
     } catch (err) {
+      console.error(err)
       process.exit(1)
     }
   })
@@ -42,19 +43,19 @@ describe('fetch with retry for node', () => {
     const options = {}
     const errors = []
     const retryOptions = {
-      statusCodes: 200,
-      maxRetries: 5,
+      resolveOn: 200,
+      retries: 5,
       signalTimeout: 100,
       retryTimeout: 100,
-      retryCodes: [503, 408],
+      retryOn: [503, 408],
       errors
     }
 
     const expectedErrors = [
       'AbortError: Aborted',
-      'FetchWithRetryError: Response.status: <503>, not in expected statusCodes: <[200]> attempt: <2>, willRetry: <true>.',
+      'RFetchError: Response.status: <503>, is in retryOn: <[503, 408]> status codes, attempt: <2> of: <5> retries, willRetry: <true>.',
       'AbortError: Aborted',
-      'FetchWithRetryError: Response.status: <408>, not in expected statusCodes: <[200]> attempt: <4>, willRetry: <true>.',
+      'RFetchError: Response.status: <408>, is in retryOn: <[503, 408]> status codes, attempt: <4> of: <5> retries, willRetry: <true>.',
       'AbortError: Aborted'
     ]
 
@@ -63,7 +64,7 @@ describe('fetch with retry for node', () => {
       path,
       // signal (slow network)
       async () => {
-        await psleep(200)
+        await delay(200)
         return {
           statusCode: 501,
           body: '',
@@ -84,7 +85,7 @@ describe('fetch with retry for node', () => {
       },
       // signal (slow network)
       async () => {
-        await psleep(200)
+        await delay(200)
         return {
           statusCode: 503,
           body: '',
@@ -105,7 +106,7 @@ describe('fetch with retry for node', () => {
       },
       // ok
       async () => {
-        await psleep(200)
+        await delay(200)
         return {
           statusCode: 200,
           body: 'OK',
@@ -116,15 +117,15 @@ describe('fetch with retry for node', () => {
       }
     )
 
-    // Act and Assert
-    fetchWithRetry(url, options, retryOptions)
-      .catch(() => {
-        const resultErrors = errors.map(err => err.toString())
-        expect(resultErrors).toEqual(expectedErrors)
-
-        jest.clearAllTimers()
-        setTimeout(done, 10)
-      })
+    // Act
+    try {
+      await rfetch(url, options, retryOptions)
+    } catch (e) {
+      // Assert
+      const resultErrors = errors.map(err => err.toString())
+      expect(resultErrors).toEqual(expectedErrors)
+      done()
+    }
   })
 
   test('Should succeed after [teapot (418), service unavailable (503), signal error] and finally 200 OK', async (done) => {
@@ -134,19 +135,19 @@ describe('fetch with retry for node', () => {
     const options = {}
     const errors = []
     const retryOptions = {
-      statusCodes: 200,
-      maxRetries: 5,
+      resolveOn: 200,
+      retries: 5,
       signalTimeout: 100,
       retryTimeout: 100,
-      retryCodes: [418, 502],
+      retryOn: [418, 408, 503],
       errors
     }
 
     const expectedStatusCode = 200
     const expectedText = 'OK'
     const expectedErrors = [
-      'FetchWithRetryError: Response.status: <418>, not in expected statusCodes: <[200]> attempt: <1>, willRetry: <true>.',
-      'FetchWithRetryError: Response.status: <503>, not in expected statusCodes: <[200]> attempt: <2>, willRetry: <true>.',
+      'RFetchError: Response.status: <418>, is in retryOn: <[418, 408, 503]> status codes, attempt: <1> of: <5> retries, willRetry: <true>.',
+      'RFetchError: Response.status: <503>, is in retryOn: <[418, 408, 503]> status codes, attempt: <2> of: <5> retries, willRetry: <true>.',
       'AbortError: Aborted'
     ]
 
@@ -175,7 +176,7 @@ describe('fetch with retry for node', () => {
       },
       // signal error
       async () => {
-        await psleep(200)
+        await delay(200)
         return {
           statusCode: 408,
           body: '',
@@ -196,18 +197,17 @@ describe('fetch with retry for node', () => {
       }
     )
 
-    // Act and Assert
-    fetchWithRetry(url, options, retryOptions)
-      .then(async (response) => {
-        const text = await response.text()
-        expect(text).toEqual(expectedText)
-        expect(response.status).toBe(expectedStatusCode)
+    // Act
+    const response = await rfetch(url, options, retryOptions)
+    const text = await response.text()
 
-        const resultErrors = errors.map(err => err.toString())
-        expect(resultErrors).toEqual(expectedErrors)
+    // Assert
+    expect(text).toEqual(expectedText)
+    expect(response.status).toEqual(expectedStatusCode)
 
-        jest.clearAllTimers()
-        setTimeout(done, 10)
-      })
+    const resultErrors = errors.map(err => err.toString())
+    expect(resultErrors).toEqual(expectedErrors)
+
+    done()
   })
 })

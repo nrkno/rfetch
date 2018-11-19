@@ -1,1 +1,1 @@
-export { default } from '../src/fetch-with-retry.js'
+export { default } from '../src/rfetch.js'

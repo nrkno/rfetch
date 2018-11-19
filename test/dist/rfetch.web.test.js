@@ -5,7 +5,7 @@
 import '../common/window.polyfill.js'
 import delay from '../common/delay.js'
 import server from '../common/server.js'
-const rfetch = require('../../dist/rfetch.min.js')
+const rfetch = require('../../dist/rfetch.web.min.js')
 
 describe('fetch with retry for node', () => {
   beforeAll(async () => {

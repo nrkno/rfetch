@@ -1,4 +1,4 @@
-import AbortController from 'abort-controller'
+import AbortControllerIpml from './impl/abort-controller-impl'
 
 /**
  * @typedef {Object} AbortContext
@@ -25,7 +25,7 @@ function abort (controller, context, timeout) {
  * @returns {AbortContext}
  */
 function create (timeout) {
-  const controller = new AbortController()
+  const controller = new AbortControllerIpml()
   const context = {
     signal: controller.signal,
     abort: true

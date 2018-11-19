@@ -1,15 +1,16 @@
 /* global beforeAll, afterAll, afterEach, describe, expect, test */
 /**
- * @jest-environment node
+ * @jest-environment jsdom
  */
+import '../common/window.polyfill.js'
 import delay from '../common/delay.js'
 import server from '../common/server.js'
-import rfetch from '../../lib/index.js'
+import rfetch from '../../lib/rfetch.web.js'
 
 describe('fetch with retry for node', () => {
   beforeAll(async () => {
     try {
-      await server.start(30003)
+      await server.start(30004)
     } catch (err) {
       console.error(err)
       process.exit(1)
@@ -29,7 +30,7 @@ describe('fetch with retry for node', () => {
     server.clearMocks()
   })
 
-  test('Should have loaded the node-fetch implementation', () => {
+  test('Should not have loaded the node-fetch implementation', () => {
     const keys = Object.keys(require.cache)
     const result = keys.find(key => /node_modules\/node-fetch/.test(key)) !== undefined
     expect(result).toBe(false)
@@ -51,11 +52,11 @@ describe('fetch with retry for node', () => {
     }
 
     const expectedErrors = [
-      'AbortError: The user aborted a request.',
+      'AbortError: Aborted',
       'RFetchError: Response.status: <503>, is in retryOn: <[503, 408]> status codes, attempt: <2> of: <5> retries, willRetry: <true>.',
-      'AbortError: The user aborted a request.',
+      'AbortError: Aborted',
       'RFetchError: Response.status: <408>, is in retryOn: <[503, 408]> status codes, attempt: <4> of: <5> retries, willRetry: <true>.',
-      'AbortError: The user aborted a request.'
+      'AbortError: Aborted'
     ]
 
     // Mock Responses
@@ -66,14 +67,20 @@ describe('fetch with retry for node', () => {
         await delay(200)
         return {
           statusCode: 501,
-          body: ''
+          body: '',
+          headers: {
+            'Access-Control-Allow-Origin': '*'
+          }
         }
       },
       // service unavailable
       () => {
         return {
           statusCode: 503,
-          body: ''
+          body: '',
+          headers: {
+            'Access-Control-Allow-Origin': '*'
+          }
         }
       },
       // signal (slow network)
@@ -81,14 +88,20 @@ describe('fetch with retry for node', () => {
         await delay(200)
         return {
           statusCode: 503,
-          body: ''
+          body: '',
+          headers: {
+            'Access-Control-Allow-Origin': '*'
+          }
         }
       },
       // request timeout
       async () => {
         return {
           statusCode: 408,
-          body: ''
+          body: '',
+          headers: {
+            'Access-Control-Allow-Origin': '*'
+          }
         }
       },
       // ok
@@ -96,7 +109,10 @@ describe('fetch with retry for node', () => {
         await delay(200)
         return {
           statusCode: 200,
-          body: 'OK'
+          body: 'OK',
+          headers: {
+            'Access-Control-Allow-Origin': '*'
+          }
         }
       }
     )
@@ -105,7 +121,7 @@ describe('fetch with retry for node', () => {
     try {
       await rfetch(url, options, retryOptions)
     } catch (e) {
-    // Assert
+      // Assert
       const resultErrors = errors.map(err => err.toString())
       expect(resultErrors).toEqual(expectedErrors)
       done()
@@ -132,7 +148,7 @@ describe('fetch with retry for node', () => {
     const expectedErrors = [
       'RFetchError: Response.status: <418>, is in retryOn: <[418, 408, 503]> status codes, attempt: <1> of: <5> retries, willRetry: <true>.',
       'RFetchError: Response.status: <503>, is in retryOn: <[418, 408, 503]> status codes, attempt: <2> of: <5> retries, willRetry: <true>.',
-      'AbortError: The user aborted a request.'
+      'AbortError: Aborted'
     ]
 
     // Mock Responses
@@ -142,14 +158,20 @@ describe('fetch with retry for node', () => {
       () => {
         return {
           statusCode: 418,
-          body: ''
+          body: '',
+          headers: {
+            'Access-Control-Allow-Origin': '*'
+          }
         }
       },
       // service unavailable
       () => {
         return {
           statusCode: 503,
-          body: ''
+          body: '',
+          headers: {
+            'Access-Control-Allow-Origin': '*'
+          }
         }
       },
       // signal error
@@ -157,14 +179,20 @@ describe('fetch with retry for node', () => {
         await delay(200)
         return {
           statusCode: 408,
-          body: ''
+          body: '',
+          headers: {
+            'Access-Control-Allow-Origin': '*'
+          }
         }
       },
       // ok
       async () => {
         return {
           statusCode: 200,
-          body: 'OK'
+          body: 'OK',
+          headers: {
+            'Access-Control-Allow-Origin': '*'
+          }
         }
       }
     )

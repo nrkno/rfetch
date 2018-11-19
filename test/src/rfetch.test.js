@@ -5,7 +5,7 @@
 import nock from 'nock'
 
 import AbortContext from '../../src/abort-context.js'
-import fetchImpl from '../../src/fetch-impl.js'
+import fetchImpl from '../../src/impl/fetch-impl.js'
 import { definitions as rfetchDefinitions, rfetch } from '../../src/rfetch.js'
 
 describe('rfetch', () => {

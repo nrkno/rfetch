@@ -1,7 +1,7 @@
 import RFetchError from './rfetch-error.js'
 import AbortContext from './abort-context.js'
 import RetryOptions from './retry-options.js'
-import fetchImpl from './fetch-impl.js'
+import fetchImpl from './impl/fetch-impl.js'
 import includes from './util/includes.js'
 
 /**

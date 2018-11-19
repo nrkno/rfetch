@@ -19,7 +19,7 @@
     "lint": "standard",
     "build": "rollup -c .rollup/rollup.config.js",
     "test": "npm run test:src && npm run test:lib && npm run test:dist",
-    "test:src": "BABEL_ENV=test jest test/**",
+    "test:src": "BABEL_ENV=test jest test/src/**",
     "test:lib": "BABEL_ENV=test jest test/lib/**",
     "test:dist": "BABEL_ENV=test jest test/dist/**"
   },
@@ -55,7 +55,7 @@
   "config": {
     "ghooks": {
       "pre-commit": "npm run lint",
-      "pre-push": "npm run build && npm run test"
+      "pre-push": "npm run test:src"
     }
   }
 }

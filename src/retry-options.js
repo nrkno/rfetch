@@ -37,7 +37,7 @@ const defaultRetryOptions = {
 
 /**
  * @param {Object} context
- * @returns {RetryOptions}
+ * @returns {RetryOptionsContext}
  */
 function parseContext (context) {
   if (!context) {

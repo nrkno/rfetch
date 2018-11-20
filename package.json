@@ -16,7 +16,7 @@
   },
   "files": [
     "dist",
-    "impl"
+    "lib"
   ],
   "scripts": {
     "prepack": "npm run lint && npm run build && npm run test",

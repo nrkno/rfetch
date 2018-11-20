@@ -1,6 +1,6 @@
 {
   "name": "@nrk/rfetch",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "rfetch - fetch with retry",
   "main": "./lib/rfetch.js",
   "module": "./lib/rfetch.mjs",

@@ -263,6 +263,7 @@ describe('rfetch', () => {
         }
       }
     }
+
     const retryOptions = {
       context
     }

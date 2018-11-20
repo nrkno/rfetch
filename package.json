@@ -4,6 +4,7 @@
   "description": "rfetch - fetch with retry",
   "main": "lib/rfetch.js",
   "module": "lib/rfetch.mjs",
+  "typings": "lib/rfetch.d.ts",
   "browser": {
     "./rfetch/index.js": "lib/rfetch.web.js",
     "./rfetch/index.mjs": "lib/rfetch.web.mjs"
@@ -20,7 +21,10 @@
   "scripts": {
     "prepack": "npm run lint && npm run build && npm run test",
     "lint": "standard",
-    "build": "rollup -c .rollup/rollup.config.js",
+    "clean": "rimraf dist lib",
+    "build": "npm run clean && npm run rollup && npm run typings",
+    "rollup": "rollup -c .rollup/rollup.config.js",
+    "typings": "cp typings/rfetch.d.ts lib/rfetch.d.ts",
     "test": "npm run test:src && npm run test:lib && npm run test:dist",
     "test:src": "BABEL_ENV=test jest test/src/**",
     "test:lib": "BABEL_ENV=test jest test/lib/**",
@@ -34,6 +38,7 @@
     "jest": "23.6.0",
     "nock": "10.0.2",
     "node-fetch": "2.3.0",
+    "rimraf": "2.6.2",
     "rollup": "0.67.3",
     "rollup-plugin-babel": "4.0.3",
     "rollup-plugin-buble": "0.19.4",

@@ -71,7 +71,7 @@ const retryOptions = {
     abortController: null,
 
     /*
-      Optional errors array (by reference), thath allows us to inspect all the error(s)
+      Optional errors array (by reference), that allows us to inspect all the error(s)
       that were thrown in the retry loop for further processing etc.
     */
     errors: [],

@@ -63,9 +63,7 @@ export default [
       }),
       cleanup({
         // set max empty lines to 1
-        maxEmptyLines: 1,
-        // keep jsdoc comments
-        comments: ['jsdoc']
+        maxEmptyLines: 1
       })
     ]
   },
@@ -89,9 +87,7 @@ export default [
       }),
       cleanup({
         // set max empty lines to 1
-        maxEmptyLines: 1,
-        // keep jsdoc comments
-        comments: ['jsdoc']
+        maxEmptyLines: 1
       })
     ]
   }

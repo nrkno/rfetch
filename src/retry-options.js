@@ -3,9 +3,9 @@ import parseIntegerArray from './util/parse-integer-array.js'
 
 /**
  * @typedef {Object} RetryOptionsContext
- * @property {AbortController} [context.abortController=null] - the global abortController associated with the retry fetch loop
+ * @property {AbortController} [context.abortController=null] - The global abortController associated with the retry fetch loop
  * @property {Error[]} [context.errors=null] - the global abortController associated with the retry fetch loop
- * @property {function} [context.sink=null] - a sink function for different events
+ * @property {function} [context.sink=null] - A sink function for different phases in the retry fetch loop
  */
 
 /** @type {RetryOptionsContext} */
@@ -22,7 +22,7 @@ const defaultRetryOptionsContext = {
  * @property {number} [retries=3] - The number of the times to retry
  * @property {(number|number[])} [retryTimeout=[100]] - The retry timeout
  * @property {(number|number[])} retryOn - The status code(s) to retry on
- * @property {RetryOptionsContext} context - The object context where to set the
+ * @property {RetryOptionsContext} context - The retry options context for more advanced control options
  */
 
 /** @type {RetryOptions} */
@@ -37,7 +37,7 @@ const defaultRetryOptions = {
 
 /**
  * @param {Object} context
- * @returns {RetryOptionsContext}
+ * @returns {RetryOptions}
  */
 function parseContext (context) {
   if (!context) {

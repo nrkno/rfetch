@@ -6,24 +6,25 @@ import fetchImpl from './impl/fetch-impl.js'
 import includes from './util/includes.js'
 import defer from './util/defer.js'
 
+/**
+ * @typedef {Object} RFetchLoopContext
+ * @property {import('./abort-context').AbortContext} abortContext
+ * @property {number} n
+ * @property {number} timeoutIndex
+ * @property {function} resolve
+ * @property {function} reject
+ */
+
 // noop sink callback
 const retrySinkNoop =
   _ => _
 
 /**
- * @typedef {Object} RetryFetchLoopCtx
- * @param {AbortContext} abortContext
- * @param {number} n
- * @param {number} timeoutIndex
- * @param {function} resolve
- * @param {function} reject
- */
-
-/**
- * @param {String} url
+ * @param {string} url
  * @param {Object} options
- * @param {RetryOptions} retryOptions
- * @param {RetryFetchLoopCtx} loopCtx
+ * @param {import('./retry-options').RetryOptions} retryOptions
+ * @param {RFetchLoopContext} loopCtx
+ * @param {any} loopCtx
  */
 function retryFetchLoopIteration (url, options, retryOptions, loopCtx) {
   const {
@@ -107,13 +108,12 @@ function retryFetchLoopSchedule (timeout, ...args) {
 }
 
 /**
- *
- * @param {String} url
- * @param {Object} options
- * @param {RetryOptions} retryOptions
- * @param {RetryFetchLoopCtx} loopCtx
+ * @param {string} url
+ * @param {Object} fetchOptions
+ * @param {import('./retry-options').RetryOptions} retryOptions
+ * @param {RFetchLoopContext} loopCtx
  */
-function retryFetchLoop (url, options, retryOptions, loopCtx) {
+function retryFetchLoop (url, fetchOptions, retryOptions, loopCtx) {
   retryOptions.context.abortController = new AbortController()
   if (!retryOptions.context.sink) {
     retryOptions.context.sink = definitions.retrySinkNoop
@@ -126,7 +126,7 @@ function retryFetchLoop (url, options, retryOptions, loopCtx) {
       () => loopCtx.abortContext ? loopCtx.abortContext.controller.abort() : undefined
     )
 
-  definitions.retryFetchLoopIteration(url, options, retryOptions, loopCtx)
+  definitions.retryFetchLoopIteration(url, fetchOptions, retryOptions, loopCtx)
     .then(response => {
       // TODO: race condition may happen see if we can reproduce this case (very unlikely)
       // if (retryOptions.context.abortController.signal.aborted)
@@ -165,7 +165,7 @@ function retryFetchLoop (url, options, retryOptions, loopCtx) {
         // schedule next loop run
         definitions.retryFetchLoopSchedule(
           retryOptions.retryTimeout[loopCtx.timeoutIndex],
-          url, options, retryOptions, loopCtx
+          url, fetchOptions, retryOptions, loopCtx
         )
       }
     )
@@ -174,16 +174,16 @@ function retryFetchLoop (url, options, retryOptions, loopCtx) {
 /**
  * Retry Fetch (rfetch)
  *
- * @param {String} url The url to fetch
- * @param {Object} options Fetch options
- * @param {RetryOptions} retryOptions
+ * @param {string} url The url to fetch
+ * @param {(Object|null)} fetchOptions Fetch options
+ * @param {(Object|null)} retryOptions Retry options
  * @returns {Promise<any>}
  */
-function rfetch (url, options = null, retryOptions = null) {
+function rfetch (url, fetchOptions = null, retryOptions = null) {
   return new Promise((resolve, reject) => (
     definitions.retryFetchLoop(
       url,
-      options || {},
+      fetchOptions || {},
       RetryOptions.parse(retryOptions),
       {
         abortContext: null,

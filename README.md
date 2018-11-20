@@ -10,7 +10,7 @@ node:
 $ npm install @nrk/rfetch
 ```
 
-## Requierments (Dependencies and/or Polyfills)
+## Requirements (Dependencies and/or Polyfills)
 
 By Default we do not install any dependencies, so you will have to install the required dependencies and/or polyfills needed for the intended target(s) of your choice below.
 

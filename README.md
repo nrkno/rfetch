@@ -6,9 +6,53 @@ Fetch With Retry
 
 node:
 
-```
+```sh
 $ npm install @nrk/rfetch
 ```
+
+## Requierments (Dependencies and/or Polyfills)
+
+By Default we do not install any dependencies, so you will have to install the required dependencies and/or polyfills needed for the intended target(s) of your choice below.
+
+**Node**
+
+For node environment you will need to install the following dependencies:
+
+* [node-fetch](https://www.npmjs.com/package/node-fetch) (also included by [isomorphic-fetch](https://www.npmjs.com/package/isomorphic-fetch))
+* [abort-controller](https://www.npmjs.com/package/abort-controller)
+
+```sh
+$ npm install node-fetch
+$ npm install abort-controller
+```
+
+**Browser**
+
+For web browser environment target you will need to have to polyfill the following builtin and API's if not present:
+
+* [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) e.g. via [es6-promise](https://www.npmjs.com/package/es6-promise)
+* [Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) e.g. via [whatwg-fetch](https://www.npmjs.com/package/whatwg-fetch) also included by [isomorphic-fetch](https://www.npmjs.com/package/isomorphic-fetch)).
+* [AbortController](https://developer.mozilla.org/en-US/docs/Web/API/AbortController) e.g. via [abort-controller](https://www.npmjs.com/package/abort-controller)
+
+__NOTE: You may want to only polyfill only what is needed depending on your target group browser compatibility needs.__
+
+
+**Isomorphic**
+
+If you intend to develop an isomorphic app where you target both the web and node targets, you will need to address the depencies litst above for each environment.
+Also you may want to prefer to install the [isomorphic-fetch](https://www.npmjs.com/package/isomorphic-fetch), which both includes [node-fetch](https://www.npmjs.com/package/node-fetch) and  [whatwg-fetch](https://www.npmjs.com/package/whatwg-fetch).
+
+Bundlers such as [browserify](http://browserify.org/), [rollup](https://rollupjs.org/guide/en) and [webpack](https://webpack.js.org/) will lookup the `main`, `module` and `browser` fields in the package.json to lookup the corresponding file to use for the given target either it be node or browser.
+
+```sh
+$ npm install isomorphic-fetch
+$ npm install abort-controller
+```
+
+## Dist
+
+A minified [umd](https://github.com/umdjs/umd) module for web, is provided under the `dist` folder, as `dist/rfetch.web.min.js` with a corresponding source map file.
+It exports `rfetch` on to the window
 
 ## Usage
 
@@ -312,38 +356,3 @@ try {
 ```
 
 Bundlers such as [browserify](http://browserify.org/) and [rollup](https://rollupjs.org/guide/en), [webpack](https://webpack.js.org/) will lookup the corresponding `.mjs` file, also the latest node works has module support behind the [`--experimental-modules`](https://nodejs.org/api/esm.html) flag.
-
-## Dependencies and/or Polyfills
-
-By Default we do not install any depencies, see the reuired depencies and/or polyfills needed for the intended target(s) of your choice below.
-
-**Node**
-
-For node environment you will need to install the following dependencies:
-
-* [node-fetch](https://www.npmjs.com/package/node-fetch) (also included by [isomorphic-fetch](https://www.npmjs.com/package/isomorphic-fetch))
-* [abort-controller](https://www.npmjs.com/package/abort-controller)
-
-
-**Browser**
-
-For web browser environment target you will need to have to polyfill the following builtin and API's if not present:
-
-* [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) e.g. via [es6-promise](https://www.npmjs.com/package/es6-promise)
-* [Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) e.g. via [whatwg-fetch](https://www.npmjs.com/package/whatwg-fetch) also included by [isomorphic-fetch](https://www.npmjs.com/package/isomorphic-fetch)).
-* [AbortController](https://developer.mozilla.org/en-US/docs/Web/API/AbortController) e.g. via [abort-controller](https://www.npmjs.com/package/abort-controller)
-
-__NOTE: You may want to only polyfill only what is needed depending on your target group browser compatibility needs.__
-
-
-**Isomorphic**
-
-If you intend to develop an isomorphic app where you target both the web and node targets, you will need to address the depencies litst above for each environment.
-Also you may want to prefer to install the [isomorphic-fetch](https://www.npmjs.com/package/isomorphic-fetch), which both includes [node-fetch](https://www.npmjs.com/package/node-fetch) and  [whatwg-fetch](https://www.npmjs.com/package/whatwg-fetch).
-
-Bundlers such as [browserify](http://browserify.org/), [rollup](https://rollupjs.org/guide/en) and [webpack](https://webpack.js.org/) will lookup the `main`, `module` and `browser` fields in the package.json to lookup the corresponding file to use for the given target either it be node or browser.
-
-## Dist
-
-A minified [umd](https://github.com/umdjs/umd) module for web, is provided under the `dist` folder, as `dist/rfetch.web.min.js` with a corresponding source map file.
-It exports `rfetch` on to the window

@@ -103,7 +103,7 @@ since it will abort the current fetch request in the loop via it's assigned abor
 
 **ResolveOn and RetryOn heuristics**
 
-The `resolveOn` and `retryOn` can be a single or more http status codes respectively.
+The `resolveOn` and `retryOn` can be one or more http status codes respectively.
 
 1. Success example - expect response.status = 200 and no retry on value(s) set
 
@@ -282,7 +282,7 @@ try {
 
 **Module Support**
 
-We support es6 modules e.g. the following code would also work
+We support es6 modules e.g. the following code would also work:
 
 ```js
 import rfetch from '@nrk/rfetch'
@@ -303,9 +303,7 @@ try {
 }
 ```
 
-Would also work.
-
-Bundlers such as [browserify](http://browserify.org/) and [rollup](https://rollupjs.org/guide/en), [webpack](https://webpack.js.org/) will lookup the corresponding `.mjs` file, also the latest node works currently [`--experimental-modules`](https://nodejs.org/api/esm.html) flag.
+Bundlers such as [browserify](http://browserify.org/) and [rollup](https://rollupjs.org/guide/en), [webpack](https://webpack.js.org/) will lookup the corresponding `.mjs` file, also the latest node works has module support behind the [`--experimental-modules`](https://nodejs.org/api/esm.html) flag.
 
 ## Dependencies and/or Polyfills
 

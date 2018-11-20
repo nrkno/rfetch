@@ -2,12 +2,12 @@
   "name": "@nrk/rfetch",
   "version": "1.0.0",
   "description": "rfetch - fetch with retry",
-  "main": "lib/rfetch.js",
-  "module": "lib/rfetch.mjs",
-  "typings": "lib/rfetch.d.ts",
+  "main": "./lib/rfetch.js",
+  "module": "./lib/rfetch.mjs",
+  "typings": "./lib/rfetch.d.ts",
   "browser": {
-    "./rfetch/index.js": "lib/rfetch.web.js",
-    "./rfetch/index.mjs": "lib/rfetch.web.mjs"
+    "./lib/rfetch.js": "./lib/rfetch.web.js",
+    "./lib/rfetch.mjs": "./lib/rfetch.web.mjs"
   },
   "repository": "github.com/nrkno/rfetch",
   "license": "MIT",

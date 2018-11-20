@@ -212,13 +212,19 @@ cancelButton.addEventListener('click',
   () => abortController.abort()
 )
 
-async function fetchUrl (url, fetchOptions) {
-  try {
-    return await rfetch(url, fetchOptions)
-  } catch (error) {
-    // will never be aborted by the abortController set to fire via the cancelButton at least
+dataButton.addEventLister('click', async () => {
+  abortController = new AbortController()
+  const fetchOptions = {
+    signal: abortController.signal
   }
-}
+
+  try {
+    const response = await rfetch('/api/data', fetchOptions)
+    ....
+  } catch (e) {
+    // will never be aborted by the abortController if the user click's the abort button
+  }
+})
 ```
 
 The retry fetch loop will not be aborted (rejected) by the user input as one would expect.
@@ -234,12 +240,14 @@ cancelButton.addEventListener('click',
   () => retryOptions.context.abortController.abort()
 )
 
-async function fetchUrl (url, fetchOptions) {
+dataButton.addEventLister('click', async () => {
   try {
-    return await rfetch(url, fetchOptions, retryOptions)
-  } catch (error) {
+    const response = await rfetch('/api/data', {}, retryOptions)
+    ....
+  } catch (e) {
+     // will be avorted by the if the user click's the abort button
   }
-}
+})
 ```
 
 **Sink phases**
@@ -331,11 +339,11 @@ __NOTE: You may want to only polyfill only what is needed depending on your targ
 **Isomorphic**
 
 If you intend to develop an isomorphic app where you target both the web and node targets, you will need to address the depencies litst above for each environment.
-Also you may want to prefer to install the [isomorphic-fetch](https://www.npmjs.com/package/isomorphic-fetch), which both includes [node-fetch](https://www.npmjs.com/package/node-fetch) and  [whatwg-fetch](https://www.npmjs.com/package/whatwg-fetch.
+Also you may want to prefer to install the [isomorphic-fetch](https://www.npmjs.com/package/isomorphic-fetch), which both includes [node-fetch](https://www.npmjs.com/package/node-fetch) and  [whatwg-fetch](https://www.npmjs.com/package/whatwg-fetch).
 
 Bundlers such as [browserify](http://browserify.org/), [rollup](https://rollupjs.org/guide/en) and [webpack](https://webpack.js.org/) will lookup the `main`, `module` and `browser` fields in the package.json to lookup the corresponding file to use for the given target either it be node or browser.
 
 ## Dist
 
-A minified umd module for web, is provided under the `dist` folder, as `dist/rfetch.web.min.js` with a corresponding source map file.
+A minified [umd](https://github.com/umdjs/umd) module for web, is provided under the `dist` folder, as `dist/rfetch.web.min.js` with a corresponding source map file.
 It exports `rfetch` on to the window

@@ -133,7 +133,7 @@ const retryOptions = {
 }
 
 try {
-  const response = await rfetch(options, fetchOptions, retryOptions)
+  const response = await rfetch(url, fetchOptions, retryOptions)
   const data = await response.json()
 } catch (err) {
   console.error(err)

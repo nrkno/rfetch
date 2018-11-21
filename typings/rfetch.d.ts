@@ -47,4 +47,4 @@ export interface RetryOptions {
   context?: RetryOptionsContext;
 }
 
-export function rfetch(url: string, options: Object | null, retryOptions: RetryOptions | null): Promise<any>;
+export default function rfetch(url: RequestInfo, options?: RequestInit, retryOptions?: RetryOptions): Promise<Response>;

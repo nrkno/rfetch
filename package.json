@@ -9,7 +9,10 @@
     "./lib/rfetch.js": "./lib/rfetch.web.js",
     "./lib/rfetch.mjs": "./lib/rfetch.web.mjs"
   },
-  "repository": "github.com/nrkno/rfetch",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:nrkno/rfetch.git"
+  },
   "license": "MIT",
   "directories": {
     "lib": "lib"

@@ -12,11 +12,11 @@ $ npm install @nrk/rfetch
 
 ## Requirements (Dependencies and/or Polyfills)
 
-By Default we do not install any dependencies, so you will have to install the required dependencies and/or polyfills needed for the intended target(s) of your choice below.
+By Default we do not install any dependencies, therefore you will have to install the required dependencies and/or polyfills needed for the intended target(s) of your choice below.
 
 **Node**
 
-For node environment you will need to install the following dependencies:
+For node environment target, the following dependencies are required:
 
 * [node-fetch](https://www.npmjs.com/package/node-fetch) (also included by [isomorphic-fetch](https://www.npmjs.com/package/isomorphic-fetch))
 * [abort-controller](https://www.npmjs.com/package/abort-controller)
@@ -28,19 +28,20 @@ $ npm install abort-controller
 
 **Browser**
 
-For web browser environment target you will need to have to polyfill the following builtin and API's if not present:
+For web browser environment target, the following Web API's will have to be polyfilled if not present:
 
 * [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) e.g. via [es6-promise](https://www.npmjs.com/package/es6-promise)
 * [Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) e.g. via [whatwg-fetch](https://www.npmjs.com/package/whatwg-fetch) also included by [isomorphic-fetch](https://www.npmjs.com/package/isomorphic-fetch)).
 * [AbortController](https://developer.mozilla.org/en-US/docs/Web/API/AbortController) e.g. via [abort-controller](https://www.npmjs.com/package/abort-controller)
 
-__NOTE: You may want to only polyfill only what is needed depending on your target group browser compatibility needs.__
+__NOTE: You may want to only polyfill only what is needed depending on the targeted browsers, and their support for the required Web API's.__
 
 
 **Isomorphic**
 
-If you intend to develop an isomorphic app where you target both the web and node targets, you will need to address the depencies litst above for each environment.
-Also you may want to prefer to install the [isomorphic-fetch](https://www.npmjs.com/package/isomorphic-fetch), which both includes [node-fetch](https://www.npmjs.com/package/node-fetch) and  [whatwg-fetch](https://www.npmjs.com/package/whatwg-fetch).
+If the intended target is an isomorphic app where you target both web and node, you will need to address the depencies listed above for each environment.
+
+For the same reason you may want to prefer to install the [isomorphic-fetch](https://www.npmjs.com/package/isomorphic-fetch), which both includes [node-fetch](https://www.npmjs.com/package/node-fetch) and  [whatwg-fetch](https://www.npmjs.com/package/whatwg-fetch).
 
 Bundlers such as [browserify](http://browserify.org/), [rollup](https://rollupjs.org/guide/en) and [webpack](https://webpack.js.org/) will lookup the `main`, `module` and `browser` fields in the package.json to lookup the corresponding file to use for the given target either it be node or browser.
 
@@ -142,8 +143,8 @@ try {
 
 __Note: both the `fetchOptions` and `retryOptions` are optional, and the retry options will default to values explained above__
 
-The `context.abortController` is set internally by the retry fetch loop and allows you to abort the retry loop,
-since it will abort the current fetch request in the loop via it's assigned abort controller.
+The `context.abortController` is set internally by the retry fetch loop and allows you to abort the current retry fetch operation in the loop. Each loop block will assign a new `abortController`   the current fetch request `context.abortController`
+the current fetch request in the loop via it's assigned abort controller.
 
 **ResolveOn and RetryOn heuristics**
 
